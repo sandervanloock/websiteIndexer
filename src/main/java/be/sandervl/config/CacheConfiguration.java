@@ -6,14 +6,14 @@ import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.expiry.Duration;
 import org.ehcache.expiry.Expirations;
 import org.ehcache.jsr107.Eh107Configuration;
-
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableCaching
@@ -40,6 +40,17 @@ public class CacheConfiguration {
             cm.createCache(be.sandervl.domain.User.class.getName(), jcacheConfiguration);
             cm.createCache(be.sandervl.domain.Authority.class.getName(), jcacheConfiguration);
             cm.createCache(be.sandervl.domain.User.class.getName() + ".authorities", jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Attribute.class.getName(), jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Attribute.class.getName() + ".relatives", jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Document.class.getName(), jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Document.class.getName() + ".matches", jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Document.class.getName() + ".attributes", jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.FeedItem.class.getName(), jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Selector.class.getName(), jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Selector.class.getName() + ".children", jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Site.class.getName(), jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Site.class.getName() + ".pages", jcacheConfiguration);
+            cm.createCache(be.sandervl.domain.Site.class.getName() + ".selectors", jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
         };
     }

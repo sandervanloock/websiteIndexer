@@ -1,0 +1,42 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "pages",
+            "otherEntityName": "document",
+            "relationshipType": "one-to-many",
+            "otherEntityRelationshipName": "site"
+        },
+        {
+            "relationshipName": "selectors",
+            "otherEntityName": "selector",
+            "relationshipType": "one-to-many",
+            "otherEntityRelationshipName": "site"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "regex",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "seed",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20161115193428",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "site",
+    "pagination": "no"
+}

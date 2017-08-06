@@ -1,0 +1,43 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "matches",
+            "otherEntityName": "document",
+            "relationshipType": "many-to-many",
+            "otherEntityField": "url",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "matches"
+        },
+        {
+            "relationshipName": "site",
+            "otherEntityName": "site",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "name"
+        },
+        {
+            "relationshipName": "attributes",
+            "otherEntityName": "attribute",
+            "relationshipType": "one-to-many",
+            "otherEntityRelationshipName": "document"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "created",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "url",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20161115194119",
+    "dto": "no",
+    "service": "serviceImpl",
+    "entityTableName": "document",
+    "pagination": "pagination"
+}

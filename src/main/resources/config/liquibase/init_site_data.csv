@@ -1,0 +1,4 @@
+id;name;regex;seed
+1;http://www.resto.be;((\/[0-9]+-[-a-zA-Z]+\/[0-9]+[-a-zA-Z]+)|(\/\w+\/[0-9]+-[-a-zA-Z]+\/[0-9]+[-a-zA-Z]+))\/(#\/step1)?$;https://nl.resto.be/restaurants/belgie
+2;http://www.redlights.be;(escort\/dames\/.+\.html)|(\/prive-ontvangst\/dames\/.+.html);https://www.redlights.be/escort/dames
+3;http://www.hookers.nl;http://www.hookers.nl/showthread.php?.*t=\d+.*;http://www.hookers.nl/forum.php

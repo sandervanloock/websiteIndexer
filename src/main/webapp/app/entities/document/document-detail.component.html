@@ -1,0 +1,40 @@
+<div *ngIf="document">
+    <h2><span>Document</span> {{document.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span>Created</span></dt>
+        <dd>
+            <span>{{document.created | date:'medium'}}</span>
+        </dd>
+        <dt><span>Url</span></dt>
+        <dd>
+            <span>{{document.url}}</span>
+        </dd>
+        <dt><span>Matches</span></dt>
+        <dd>
+            <span *ngFor="let matches of document.matches; let last = last">
+                <a [routerLink]="['/document', matches?.id ]">{{matches.url}}</a>{{last ? '' : ', '}}
+            </span>
+        </dd>
+        <dt><span>Site</span></dt>
+        <dd>
+            <div *ngIf="document.site">
+                <a [routerLink]="['/site', document.site?.id]">{{document.site?.name}}</a>
+            </div>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'document/'+ document.id + '/edit'} }]"
+            replaceUrl="true"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span> Edit</span>
+    </button>
+</div>

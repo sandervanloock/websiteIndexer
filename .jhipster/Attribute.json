@@ -1,0 +1,42 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "document",
+            "otherEntityName": "document",
+            "relationshipType": "many-to-one",
+            "relationshipValidateRules": [
+                "required"
+            ],
+            "otherEntityField": "url"
+        },
+        {
+            "relationshipName": "selector",
+            "otherEntityName": "selector",
+            "relationshipType": "many-to-one",
+            "relationshipValidateRules": [
+                "required"
+            ],
+            "otherEntityField": "name"
+        },
+        {
+            "relationshipName": "relatives",
+            "otherEntityName": "attribute",
+            "relationshipType": "many-to-many",
+            "otherEntityField": "value",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "relatives"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "value",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20161115203609",
+    "dto": "no",
+    "service": "serviceImpl",
+    "entityTableName": "attribute",
+    "pagination": "pager"
+}

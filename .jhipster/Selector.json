@@ -1,0 +1,59 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "site",
+            "otherEntityName": "site",
+            "relationshipType": "many-to-one",
+            "relationshipValidateRules": [
+                "required"
+            ],
+            "otherEntityField": "name"
+        },
+        {
+            "relationshipName": "children",
+            "otherEntityName": "selector",
+            "relationshipType": "one-to-many",
+            "otherEntityField": "name",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "children"
+        },
+        {
+            "relationshipName": "parent",
+            "otherEntityName": "selector",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "name",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "parent"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "value",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "attribute",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "isPrimary",
+            "fieldType": "Boolean"
+        }
+    ],
+    "changelogDate": "20161115201433",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "selector",
+    "pagination": "no"
+}

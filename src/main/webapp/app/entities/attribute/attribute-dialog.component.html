@@ -1,0 +1,69 @@
+<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+
+    <div class="modal-header">
+        <h4 class="modal-title" id="myAttributeLabel">Create or edit a Attribute</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                (click)="clear()">&times;
+        </button>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" [hidden]="!attribute.id">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                   [(ngModel)]="attribute.id" readonly/>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_value">Value</label>
+            <input type="text" class="form-control" name="value" id="field_value"
+                   [(ngModel)]="attribute.value"/>
+        </div>
+
+        <div class="form-group">
+            <label for="field_document">Document</label>
+            <select class="form-control" id="field_document" name="document" [(ngModel)]="attribute.document" required>
+                <option [ngValue]="documentOption.id === attribute.document?.id ? attribute.document : documentOption"
+                        *ngFor="let documentOption of documents; trackBy: trackDocumentById">{{documentOption.url}}
+                </option>
+            </select>
+        </div>
+        <div [hidden]="!(editForm.controls.document?.dirty && editForm.controls.document?.invalid)">
+            <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.document?.errors?.required">
+                This field is required.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="field_selector">Selector</label>
+            <select class="form-control" id="field_selector" name="selector" [(ngModel)]="attribute.selector" required>
+                <option [ngValue]="selectorOption.id === attribute.selector?.id ? attribute.selector : selectorOption"
+                        *ngFor="let selectorOption of selectors; trackBy: trackSelectorById">{{selectorOption.name}}
+                </option>
+            </select>
+        </div>
+        <div [hidden]="!(editForm.controls.selector?.dirty && editForm.controls.selector?.invalid)">
+            <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.selector?.errors?.required">
+                This field is required.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="field_relatives">Relatives</label>
+            <select class="form-control" id="field_relatives" multiple name="relatives"
+                    [(ngModel)]="attribute.relatives">
+                <option [ngValue]="getSelected(attribute.relatives, attributeOption)"
+                        *ngFor="let attributeOption of attributes; trackBy: trackAttributeById">
+                    {{attributeOption.value}}
+                </option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="clear()">
+            <span class="fa fa-ban"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+            <span class="fa fa-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <!--
+        Added the constraints for entity Selector.
+    -->
+    <changeSet id="20161115201433-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="site_id"
+                                 baseTableName="selector"
+                                 constraintName="fk_selector_site_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="site"/>
+
+        <addForeignKeyConstraint baseColumnNames="parent_id"
+                                 baseTableName="selector"
+                                 constraintName="fk_selector_parent_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="selector"/>
+
+    </changeSet>
+</databaseChangeLog>

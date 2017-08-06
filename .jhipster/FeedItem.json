@@ -1,0 +1,18 @@
+{
+    "fluentMethods": true,
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "text",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20161112171835",
+    "dto": "no",
+    "service": "serviceImpl",
+    "entityTableName": "feed_item",
+    "pagination": "pagination"
+}

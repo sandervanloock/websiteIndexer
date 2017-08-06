@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="autoIncrement" value="true"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+
+    <!--
+        Added the entity Attribute.
+    -->
+    <changeSet id="20161115203609-1" author="jhipster">
+        <createTable tableName="attribute">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="jhi_value" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="document_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="selector_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
+        </createTable>
+
+        <createTable tableName="attribute_relatives">
+            <column name="relatives_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attributes_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="attributes_id, relatives_id" tableName="attribute_relatives"/>
+
+    </changeSet>
+</databaseChangeLog>

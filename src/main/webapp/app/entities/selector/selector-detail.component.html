@@ -1,0 +1,48 @@
+<div *ngIf="selector">
+    <h2><span>Selector</span> {{selector.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span>Value</span></dt>
+        <dd>
+            <span>{{selector.value}}</span>
+        </dd>
+        <dt><span>Name</span></dt>
+        <dd>
+            <span>{{selector.name}}</span>
+        </dd>
+        <dt><span>Attribute</span></dt>
+        <dd>
+            <span>{{selector.attribute}}</span>
+        </dd>
+        <dt><span>Is Primary</span></dt>
+        <dd>
+            <span>{{selector.isPrimary}}</span>
+        </dd>
+        <dt><span>Site</span></dt>
+        <dd>
+            <div *ngIf="selector.site">
+                <a [routerLink]="['/site', selector.site?.id]">{{selector.site?.name}}</a>
+            </div>
+        </dd>
+        <dt><span>Parent</span></dt>
+        <dd>
+            <div *ngIf="selector.parent">
+                <a [routerLink]="['/selector', selector.parent?.id]">{{selector.parent?.name}}</a>
+            </div>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'selector/'+ selector.id + '/edit'} }]"
+            replaceUrl="true"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span> Edit</span>
+    </button>
+</div>
