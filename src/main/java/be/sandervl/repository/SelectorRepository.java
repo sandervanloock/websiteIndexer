@@ -1,6 +1,7 @@
 package be.sandervl.repository;
 
 import be.sandervl.domain.Selector;
+import be.sandervl.domain.Site;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SelectorRepository extends JpaRepository<Selector, Long> {
 
+    Iterable<Selector> findBySiteAndParentIsNull(Site site);
 }

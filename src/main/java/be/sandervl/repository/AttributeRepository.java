@@ -1,12 +1,14 @@
 package be.sandervl.repository;
 
 import be.sandervl.domain.Attribute;
+import be.sandervl.domain.Document;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Spring Data JPA repository for the Attribute entity.
@@ -21,4 +23,5 @@ public interface AttributeRepository extends JpaRepository<Attribute, Long> {
     @Query("select attribute from Attribute attribute left join fetch attribute.relatives where attribute.id =:id")
     Attribute findOneWithEagerRelationships(@Param("id") Long id);
 
+    Set<Attribute> findByDocument(Document document);
 }

@@ -1,8 +1,11 @@
 package be.sandervl.service;
 
 import be.sandervl.domain.Attribute;
+import be.sandervl.domain.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Set;
 
 /**
  * Service Interface for managing Attribute.
@@ -39,4 +42,6 @@ public interface AttributeService {
      * @param id the id of the entity
      */
     void delete(Long id);
+
+    Set<Attribute> findByDocument(Document document);
 }

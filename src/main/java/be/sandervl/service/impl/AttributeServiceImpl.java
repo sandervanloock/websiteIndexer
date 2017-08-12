@@ -1,6 +1,7 @@
 package be.sandervl.service.impl;
 
 import be.sandervl.domain.Attribute;
+import be.sandervl.domain.Document;
 import be.sandervl.repository.AttributeRepository;
 import be.sandervl.service.AttributeService;
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 
 /**
@@ -73,5 +76,10 @@ public class AttributeServiceImpl implements AttributeService {
     public void delete(Long id) {
         log.debug("Request to delete Attribute : {}", id);
         attributeRepository.delete(id);
+    }
+
+    @Override
+    public Set<Attribute> findByDocument(Document document) {
+        return attributeRepository.findByDocument(document);
     }
 }

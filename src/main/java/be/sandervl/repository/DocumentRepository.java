@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring Data JPA repository for the Document entity.
@@ -21,4 +22,5 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @Query("select document from Document document left join fetch document.matches where document.id =:id")
     Document findOneWithEagerRelationships(@Param("id") Long id);
 
+    Optional<Document> findByUrl(String url);
 }

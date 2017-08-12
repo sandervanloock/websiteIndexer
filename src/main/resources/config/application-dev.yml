@@ -136,3 +136,9 @@ jhipster:
 # ===================================================================
 
 application:
+
+crawler:
+    crawlStorageFolder: ./target/crawler
+    numberOfCrawlers: 5
+    maxPagesToFetch: -1
+    politenessDelay: 10

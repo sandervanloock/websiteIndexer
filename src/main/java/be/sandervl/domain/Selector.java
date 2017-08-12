@@ -191,4 +191,8 @@ public class Selector implements Serializable {
             ", isPrimary='" + isIsPrimary() + "'" +
             "}";
     }
+
+    public boolean isChild() {
+        return parent != null;
+    }
 }
