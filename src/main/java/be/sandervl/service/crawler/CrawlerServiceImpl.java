@@ -52,14 +52,8 @@ public class CrawlerServiceImpl implements CrawlerService
 		}
 		CrawlController controller = controllers.get( site );
 		if ( controller == null ) {
-			try {
-				controller = createController( site );
-				controllers.put( site, controller );
-			}
-			catch ( Exception e ) {
-				throw new CrawlServiceException(
-						String.format( "Unable to create a new CrawlController with site %s", site ), e );
-			}
+			controller = createController( site );
+			controllers.put( site, controller );
 		}
 		if ( controller.isFinished() ) {
 			startController( site, controller );
@@ -87,7 +81,7 @@ public class CrawlerServiceImpl implements CrawlerService
 				Optional.empty();
 	}
 
-	private CrawlController createController( Site site ) throws Exception {
+	private CrawlController createController( Site site ) throws CrawlServiceException {
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder( crawlerProperties.getCrawlStorageFolder() );
 		config.setMaxPagesToFetch( crawlerProperties.getMaxPagesToFetch() );
@@ -97,10 +91,16 @@ public class CrawlerServiceImpl implements CrawlerService
 		PageFetcher pageFetcher = new PageFetcher( config );
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		RobotstxtServer robotstxtServer = new RobotstxtServer( robotstxtConfig, pageFetcher );
-		CrawlController controller = new CrawlController( config, pageFetcher, robotstxtServer );
-		controller.addSeed( site.getSeed() );
-		startController( site, controller );
-		return controller;
+		try {
+			CrawlController controller = new CrawlController( config, pageFetcher, robotstxtServer );
+			controller.addSeed( site.getSeed() );
+			startController( site, controller );
+			return controller;
+		}
+		catch ( Exception e ) {
+			throw new CrawlServiceException(
+					String.format( "Unable to create a new CrawlController with site %s", site ), e );
+		}
 	}
 
 	private void startController( Site site, CrawlController controller ) {
