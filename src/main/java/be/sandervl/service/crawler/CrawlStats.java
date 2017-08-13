@@ -2,8 +2,7 @@ package be.sandervl.service.crawler;
 
 
 /**
- * @author: sander
- * @date: 15/11/2016
+ * @author sander
  */
 public class CrawlStats {
 

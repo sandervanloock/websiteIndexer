@@ -1,14 +1,32 @@
 package be.sandervl.config;
 
+import edu.uci.ics.crawler4j.crawler.CrawlController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "crawler")
 public class CrawlerProperties {
 
-    private String crawlStorageFolder;
-    private int numberOfCrawlers;
-    private int maxPagesToFetch;
-    private int politenessDelay;
+	/**
+	 * @see edu.uci.ics.crawler4j.crawler.CrawlConfig#crawlStorageFolder
+	 */
+	private String crawlStorageFolder = "./target/crawler";
+
+	/**
+	 * The number of crawler instances (threads) used in a controller.
+	 *
+	 * @see CrawlController#startNonBlocking(edu.uci.ics.crawler4j.crawler.CrawlController.WebCrawlerFactory, int)
+	 */
+	private int numberOfCrawlers = 1;
+
+	/**
+	 * @see edu.uci.ics.crawler4j.crawler.CrawlConfig#maxPagesToFetch
+	 */
+	private int maxPagesToFetch = 100;
+
+	/**
+	 * @see edu.uci.ics.crawler4j.crawler.CrawlConfig#politenessDelay
+	 */
+	private int politenessDelay = 10;
 
     public String getCrawlStorageFolder() {
         return crawlStorageFolder;
