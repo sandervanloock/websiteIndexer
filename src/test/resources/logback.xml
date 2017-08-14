@@ -4,7 +4,7 @@
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
     <logger name="be.sandervl" level="INFO"/>
-
+	<logger name="edu.uci.ics.crawler4j" level="DEBUG"/>
     <logger name="io.github.jhipster" level="WARN"/>
 
     <logger name="javax.activation" level="WARN"/>
