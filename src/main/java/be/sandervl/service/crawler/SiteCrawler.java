@@ -8,7 +8,6 @@ import be.sandervl.repository.DocumentRepository;
 import be.sandervl.repository.SelectorRepository;
 import be.sandervl.service.AttributeService;
 import be.sandervl.service.jsoup.JsoupService;
-import be.sandervl.web.rest.CrawlerResource;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.url.WebURL;
@@ -34,7 +33,6 @@ public class SiteCrawler extends WebCrawler
 	private final AttributeService attributeService;
 	private final SelectorRepository selectorRepository;
 	private final DocumentRepository documentRepository;
-	private final CrawlerResource controller;
 	private final JsoupService jsoupService;
 
 	private Pattern pattern = Pattern.compile( ".*" );
@@ -44,12 +42,10 @@ public class SiteCrawler extends WebCrawler
 	public SiteCrawler( AttributeService attributeService,
 	                    SelectorRepository selectorRepository,
 	                    DocumentRepository documentRepository,
-	                    CrawlerResource controller,
 	                    JsoupService jsoupService ) {
 		this.attributeService = attributeService;
 		this.selectorRepository = selectorRepository;
 		this.documentRepository = documentRepository;
-		this.controller = controller;
 		this.jsoupService = jsoupService;
 	}
 
@@ -64,14 +60,12 @@ public class SiteCrawler extends WebCrawler
 	@Override
 	public void onStart() {
 		this.stats.incCrawlersRunning();
-		controller.sendCrawlStatus( this.stats );
 		super.onStart();
 	}
 
 	@Override
 	public void onBeforeExit() {
 		this.stats.decCrawlersRunning();
-		controller.sendCrawlStatus( this.stats );
 		super.onBeforeExit();
 	}
 
@@ -84,7 +78,6 @@ public class SiteCrawler extends WebCrawler
 	@Override
 	public boolean shouldVisit( Page referringPage, WebURL url ) {
 		this.stats.incNumberVisited();
-		this.controller.sendCrawlStatus( this.stats );
 		String href = url.getURL().toLowerCase();
 		return this.pattern.matcher( href ).find();
 	}
@@ -108,7 +101,6 @@ public class SiteCrawler extends WebCrawler
 		logger.debug( "Fetching URL: " + url );
 		if ( this.stats != null ) {
 			this.stats.incNumberProcessed();
-			this.controller.sendCrawlStatus( this.stats );
 		}
 		jsoupService.getDocumentFromUrl( url ).ifPresent( jsoupDocument -> processDocument( page, jsoupDocument ) );
 	}
@@ -126,12 +118,10 @@ public class SiteCrawler extends WebCrawler
 		Set<Attribute> exitingAttributes = attributeService.findByDocument( document );
 		Iterable<Selector> selectors = selectorRepository.findBySiteAndParentIsNull( site );
 		selectors.forEach( selector -> processJsoupDocument( jsoupDocument, document, exitingAttributes, selector ) );
-		controller.sendCrawlStatus( this.stats );
 	}
 
 	private Document createDocument() {
 		this.stats.incNewDocuments();
-		this.controller.sendCrawlStatus( this.stats );
 		return new Document();
 	}
 
@@ -177,7 +167,6 @@ public class SiteCrawler extends WebCrawler
 
 	private Attribute createNewAttribute() {
 		this.stats.incNewAttributes();
-		this.controller.sendCrawlStatus( this.stats );
 		return new Attribute();
 	}
 

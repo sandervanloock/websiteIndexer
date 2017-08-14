@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
@@ -27,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
@@ -39,9 +42,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ITSiteCrawler
 {
-	private SiteCrawler siteCrawler;
 	@Mock
-	private JsoupService jsoupService; // = spy( new JsoupServiceImpl() );
+	private JsoupService jsoupService;
 	@Mock
 	private DocumentRepository documentRepository;
 	@Mock
@@ -60,11 +62,12 @@ public class ITSiteCrawler
 	private DocIDServer docIdServer;
 	@Mock
 	private PageFetchResult pageFetchResult;
+	private CrawlStats crawlStats;
 
 	@Before
 	public void setUp() throws Exception {
-		siteCrawler = new SiteCrawler( attributeService, selectorRepository, documentRepository, controller,
-		                               jsoupService );
+		crawlStats = new CrawlStats();
+
 		when( jsoupService.getDocumentFromUrl( "http://www.resto.be" ) ).thenReturn(
 				Optional.of( new org.jsoup.nodes.Document( "http://www.resto.be" ) ) );
 		when( documentRepository.findByUrl( anyString() ) ).thenReturn( Optional.empty() );
@@ -75,8 +78,10 @@ public class ITSiteCrawler
 		url.setURL( "http://www.resto.be" );
 		List<WebURL> urls = Arrays.asList( url, url, url );
 		//frontier first gets this list of urls
-		doAnswer( answer -> ( (List) answer.getArguments()[1] )
-				.addAll( urls ) )
+		Answer answer1 = answer -> ( (List) answer.getArguments()[1] ).addAll( urls );
+		Answer answer2 = answer -> ( (List) answer.getArguments()[1] ).addAll( Arrays.asList( url ) );
+		doAnswer( answer1 )
+				.doAnswer( answer2 )
 				.doAnswer( answer -> answer )
 				.when( frontier ).getNextURLs( anyInt(), anyList() );
 		when( pageFetchResult.getStatusCode() ).thenReturn( HttpStatus.OK.value() );
@@ -99,15 +104,35 @@ public class ITSiteCrawler
 		when( crawlController.getConfig() ).thenReturn( new CrawlConfig() );
 	}
 
-	@Test
-	public void verifyCrawl() throws Exception {
+	@Test(timeout = 5000)
+	public void verifyCrawlWithOneInstance() throws Exception {
 		Site site = new Site();
 		site.setRegex( "http://www.resto.be" );
-		siteCrawler.setUp( site, new CrawlStats() );
-		Thread thread = new Thread( siteCrawler, "Crawler 1" );
-		siteCrawler.init( 1, crawlController );
+		spawnCrawler( site, 1 );
+		Thread.sleep( 3000 );
+		verify( documentRepository, times( 4 ) ).save( any( Document.class ) );
+	}
+
+	@Test(timeout = 5000)
+	public void verifyCrawlWithTwoCrawlers() throws Exception {
+		Site site = new Site();
+		site.setRegex( "http://www.resto.be" );
+		SiteCrawler siteCrawler1 = spawnCrawler( site, 1 );
+		SiteCrawler siteCrawler2 = spawnCrawler( site, 2 );
+		Thread.sleep( 3000 );
+		verify( documentRepository, times( 4 ) ).save( any( Document.class ) );
+		assertSame( siteCrawler1.getMyLocalData(), siteCrawler2.getMyLocalData() );
+		assertEquals( 4, ( (CrawlStats) siteCrawler1.getMyLocalData() ).getNewDocuments() );
+	}
+
+	private SiteCrawler spawnCrawler( Site site,
+	                                  int i ) throws InstantiationException, IllegalAccessException, InterruptedException {
+		SiteCrawler siteCrawler = new SiteCrawler( attributeService, selectorRepository, documentRepository,
+		                                           jsoupService );
+		siteCrawler.setUp( site, crawlStats );
+		Thread thread = new Thread( siteCrawler, "Crawler " + i );
+		siteCrawler.init( i, crawlController );
 		thread.start();
-		thread.join( 5000 );
-		verify( documentRepository, times( 3 ) ).save( any( Document.class ) );
+		return siteCrawler;
 	}
 }
