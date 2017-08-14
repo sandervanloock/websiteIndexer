@@ -23,6 +23,7 @@
 -->
 
     <logger name="be.sandervl" level="#logback.loglevel#"/>
+    <logger name="edu.uci.ics.crawler4j" level="#logback.loglevel#"/>
 
     <logger name="io.github.jhipster" level="#logback.loglevel#"/>
 

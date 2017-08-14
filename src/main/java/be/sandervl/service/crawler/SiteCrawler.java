@@ -56,7 +56,9 @@ public class SiteCrawler extends WebCrawler
 	public void setUp( Site site, CrawlStats crawlStats ) {
 		this.site = site;
 		this.stats = crawlStats;
-		this.pattern = Pattern.compile( site.getRegex() );
+		if ( StringUtils.isNotBlank( site.getRegex() ) ) {
+			this.pattern = Pattern.compile( site.getRegex() );
+		}
 	}
 
 	@Override

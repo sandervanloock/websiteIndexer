@@ -44,7 +44,7 @@ public class CrawlerServiceTest
 	@Test
 	public void startAlreadyStartedCrawler() throws Exception {
 		Site site = new Site();
-		site.setSeed( "www.google.be" );
+		site.setSeed( "http://www.google.be" );
 		CrawlController actual = crawlerService.startCrawler( site );
 		CrawlController actual2 = crawlerService.startCrawler( site );
 		assertSame( actual, actual2 );
@@ -57,19 +57,26 @@ public class CrawlerServiceTest
 	}
 
 	@Test(expected = CrawlServiceException.class)
+	public void noValidUrlSeedThrowsException() throws Exception {
+		Site site = new Site();
+		site.setSeed( "test.be" );
+		crawlerService.startCrawler( site );
+	}
+
+	@Test(expected = CrawlServiceException.class)
 	public void unableToCreateController() throws Exception {
 		CrawlerProperties properties = new CrawlerProperties();
 		properties.setCrawlStorageFolder( null );
 		CrawlerService invalidService = new CrawlerServiceImpl( properties, context );
 		Site site = new Site();
-		site.setSeed( "www.google.be" );
+		site.setSeed( "http://www.google.be" );
 		invalidService.startCrawler( site );
 	}
 
 	@Test
 	public void stopCrawlerSetsStatus() throws Exception {
 		Site site = new Site();
-		site.setSeed( "www.google.be" );
+		site.setSeed( "http://www.google.be" );
 		crawlerService.startCrawler( site );
 		boolean actual = crawlerService.stopCrawler( site );
 		Optional<CrawlStats> stats = crawlerService.getStats( site );
@@ -106,7 +113,7 @@ public class CrawlerServiceTest
 	@Test
 	public void getStatsWithInitialData() throws Exception {
 		Site site = new Site();
-		site.setSeed( "www.google.be" );
+		site.setSeed( "http://www.google.be" );
 		crawlerService.startCrawler( site );
 		Optional<CrawlStats> stats = crawlerService.getStats( site );
 		assertTrue( stats.isPresent() );

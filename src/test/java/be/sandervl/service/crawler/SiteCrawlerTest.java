@@ -36,120 +36,119 @@ import static org.mockito.Mockito.*;
  * @author Sander Van Loock
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SiteCrawlerTest {
+public class SiteCrawlerTest
+{
+	@Spy
+	@InjectMocks
+	private JsoupService jsoupService = spy( new JsoupServiceImpl() );
 
-    @Spy
-    @InjectMocks
-    private JsoupService jsoupService = spy(new JsoupServiceImpl());
+	@Mock
+	private DocumentRepository documentRepository;
 
-    @Mock
-    private DocumentRepository documentRepository;
+	@Mock
+	private AttributeService attributeService;
 
-    @Mock
-    private AttributeService attributeService;
+	@Mock
+	private SelectorRepository selectorRepository;
 
-    @Mock
-    private SelectorRepository selectorRepository;
+	@Mock
+	private CrawlerResource controller;
 
-    @Mock
-    private CrawlerResource controller;
+	private SiteCrawler siteCrawler;
 
-    @InjectMocks
-    private SiteCrawler siteCrawler;
+	//@Mock
+	//private ProcessorChain processorChain;
 
-    //@Mock
-    //private ProcessorChain processorChain;
+	@Before
+	public void setUp() throws Exception {
+		siteCrawler = new SiteCrawler( attributeService, selectorRepository, documentRepository, controller,
+		                               jsoupService );
+		doReturn( Optional.of( mock( org.jsoup.nodes.Document.class ) ) ).when( jsoupService ).getDocumentFromUrl(
+				anyString() );
 
-    @Before
-    public void setUp() throws Exception {
-        siteCrawler = new SiteCrawler(attributeService, selectorRepository, documentRepository, controller, jsoupService);
-        //initMocks(this);
+		when( documentRepository.findByUrl( anyString() ) ).thenReturn( Optional.empty() );
 
-        doReturn(Optional.of(mock(org.jsoup.nodes.Document.class))).when(jsoupService).getDocumentFromUrl(anyString());
+		when( attributeService.findByDocument( any( Document.class ) ) ).thenReturn(
+				new HashSet<>( Arrays.asList( new Attribute() ) ) );
 
-        when(documentRepository.findByUrl(anyString())).thenReturn(Optional.empty());
+		when( selectorRepository.findBySiteAndParentIsNull( any( Site.class ) ) ).thenReturn( Collections.emptySet() );
 
-        when(attributeService.findByDocument(any(Document.class))).thenReturn(Collections.emptySet());
+		//when(processorChain.process(anyString(), any(Selector.class), any(Document.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+	}
 
-        when(selectorRepository.findBySiteAndParentIsNull(any(Site.class))).thenReturn(Collections.emptySet());
+	@Test
+	public void urlWithParamsAndAnchors() throws Exception {
+		String fullUrl = "http://www.google.be/my/path?abc=123#subscription";
+		Page mock = pageFromUrl( fullUrl );
 
-        //when(processorChain.process(anyString(), any(Selector.class), any(Document.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
-    }
+		siteCrawler.visit( mock );
 
-    @Test
-    public void urlWithParamsAndAnchors() throws Exception {
-        String fullUrl = "http://www.google.be/my/path?abc=123#subscription";
-        Page mock = pageFromUrl(fullUrl);
+		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass( Document.class );
+		verify( documentRepository, times( 1 ) ).save( documentCaptor.capture() );
 
-        siteCrawler.visit(mock);
+		assertEquals( "/my/path?abc=123#subscription", documentCaptor.getValue().getUrl() );
+	}
 
-        ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
-        verify(documentRepository, times(1)).save(documentCaptor.capture());
+	@Test
+	public void rootUrl() throws Exception {
+		String fullUrl = "http://www.google.be/";
+		Page mock = pageFromUrl( fullUrl );
 
-        assertEquals("/my/path?abc=123#subscription", documentCaptor.getValue().getUrl());
-    }
+		siteCrawler.visit( mock );
 
-    @Test
-    public void rootUrl() throws Exception {
-        String fullUrl = "http://www.google.be/";
-        Page mock = pageFromUrl(fullUrl);
+		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass( Document.class );
+		verify( documentRepository, times( 1 ) ).save( documentCaptor.capture() );
 
-        siteCrawler.visit(mock);
+		assertEquals( "/", documentCaptor.getValue().getUrl() );
+	}
 
-        ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
-        verify(documentRepository, times(1)).save(documentCaptor.capture());
+	@Test
+	public void urlWithMultiplePaths() throws Exception {
+		String fullUrl = "http://www.google.be/my/path/is/so/cool";
+		Page mock = pageFromUrl( fullUrl );
 
-        assertEquals("/", documentCaptor.getValue().getUrl());
-    }
+		siteCrawler.visit( mock );
 
-    @Test
-    public void urlWithMultiplePaths() throws Exception {
-        String fullUrl = "http://www.google.be/my/path/is/so/cool";
-        Page mock = pageFromUrl(fullUrl);
+		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass( Document.class );
+		verify( documentRepository, times( 1 ) ).save( documentCaptor.capture() );
 
-        siteCrawler.visit(mock);
+		assertEquals( "/my/path/is/so/cool", documentCaptor.getValue().getUrl() );
+	}
 
-        ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
-        verify(documentRepository, times(1)).save(documentCaptor.capture());
+	@Test
+	public void fullInputSelectorTreeTest() throws Exception {
+		org.jsoup.nodes.Document document = documentFromFileName( "testinput2.html" );
 
-        assertEquals("/my/path/is/so/cool", documentCaptor.getValue().getUrl());
-    }
+		doReturn( Optional.of( document ) ).when( jsoupService ).getDocumentFromUrl( anyString() );
 
-    @Test
-    public void fullInputSelectorTreeTest() throws Exception {
-        org.jsoup.nodes.Document document = documentFromFileName("testinput2.html");
+		String fullUrl = "http://www.google.be/my/path/is/so/cool";
+		Page mock = pageFromUrl( fullUrl );
 
-        doReturn(Optional.of(document)).when(jsoupService).getDocumentFromUrl(anyString());
+		Selector parent = new Selector();
+		parent.setName( "post" );
+		parent.setValue( ".postcontainer" );
+		Selector child1 = new Selector();
+		child1.setName( "date" );
+		child1.setValue( ".postdate" );
+		child1.setParent( parent );
+		Selector child2 = new Selector();
+		child2.setName( "username" );
+		child2.setValue( ".postdetails .username" );
+		child2.setParent( parent );
+		parent.setChildren( new HashSet<>( Arrays.asList( child1, child2 ) ) );
 
-        String fullUrl = "http://www.google.be/my/path/is/so/cool";
-        Page mock = pageFromUrl(fullUrl);
+		when( selectorRepository.findBySiteAndParentIsNull( any( Site.class ) ) ).thenReturn( Arrays.asList(
+				parent
+		) );
 
-        Selector parent = new Selector();
-        parent.setName("post");
-        parent.setValue(".postcontainer");
-        Selector child1 = new Selector();
-        child1.setName("date");
-        child1.setValue(".postdate");
-        child1.setParent(parent);
-        Selector child2 = new Selector();
-        child2.setName("username");
-        child2.setValue(".postdetails .username");
-        child2.setParent(parent);
-        parent.setChildren(new HashSet<>(Arrays.asList(child1, child2)));
+		siteCrawler.visit( mock );
 
-        when(selectorRepository.findBySiteAndParentIsNull(any(Site.class))).thenReturn(Arrays.asList(
-            parent
-        ));
+		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass( Document.class );
+		verify( documentRepository, times( 1 ) ).save( documentCaptor.capture() );
+		ArgumentCaptor<Attribute> attributeCaptor = ArgumentCaptor.forClass( Attribute.class );
 
-        siteCrawler.visit(mock);
-
-        ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
-        verify(documentRepository, times(1)).save(documentCaptor.capture());
-        ArgumentCaptor<Attribute> attributeCaptor = ArgumentCaptor.forClass(Attribute.class);
-
-        verify(attributeService, times(6)).save(attributeCaptor.capture());
-        assertEquals(6, attributeCaptor.getAllValues().size());
-    }
-
+		verify( attributeService, times( 6 ) ).save( attributeCaptor.capture() );
+		assertEquals( 6, attributeCaptor.getAllValues().size() );
+	}
 
 }

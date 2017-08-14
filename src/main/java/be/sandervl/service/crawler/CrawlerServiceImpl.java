@@ -7,6 +7,7 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @Service
 public class CrawlerServiceImpl implements CrawlerService
 {
+	public static final UrlValidator URL_VALIDATOR = new UrlValidator();
 	private static Logger log = LoggerFactory.getLogger( CrawlerService.class );
 
 	private final CrawlerProperties crawlerProperties;
@@ -43,20 +45,21 @@ public class CrawlerServiceImpl implements CrawlerService
 	}
 
 	@Override
-	public CrawlController startCrawler( Site site ) throws CrawlServiceException {
+	public CrawlController startCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException {
 		if ( site == null ) {
 			throw new CrawlServiceException( "Given Site should not be null" );
 		}
-		if ( org.apache.commons.lang3.StringUtils.isBlank( site.getSeed() ) ) {
+		if ( org.apache.commons.lang3.StringUtils.isBlank( site.getSeed() ) ||
+				!URL_VALIDATOR.isValid( site.getSeed() ) ) {
 			throw new CrawlServiceException( String.format( "Given Site %s should have a valid seed", site ) );
 		}
 		CrawlController controller = controllers.get( site );
 		if ( controller == null ) {
-			controller = createController( site );
+			controller = createController( site, nonBlocking );
 			controllers.put( site, controller );
 		}
 		if ( controller.isFinished() ) {
-			startController( site, controller );
+			startController( site, controller, nonBlocking );
 		}
 		return controller;
 	}
@@ -81,7 +84,7 @@ public class CrawlerServiceImpl implements CrawlerService
 				Optional.empty();
 	}
 
-	private CrawlController createController( Site site ) throws CrawlServiceException {
+	private CrawlController createController( Site site, boolean nonBlocking ) throws CrawlServiceException {
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder( crawlerProperties.getCrawlStorageFolder() );
 		config.setMaxPagesToFetch( crawlerProperties.getMaxPagesToFetch() );
@@ -94,7 +97,7 @@ public class CrawlerServiceImpl implements CrawlerService
 		try {
 			CrawlController controller = new CrawlController( config, pageFetcher, robotstxtServer );
 			controller.addSeed( site.getSeed() );
-			startController( site, controller );
+			startController( site, controller, nonBlocking );
 			return controller;
 		}
 		catch ( Exception e ) {
@@ -103,7 +106,7 @@ public class CrawlerServiceImpl implements CrawlerService
 		}
 	}
 
-	private void startController( Site site, CrawlController controller ) {
+	private void startController( Site site, CrawlController controller, boolean nonBlocking ) {
 		// share stats object for multiple crawlers, crawler is initialized multiple times
 		CrawlStats stats = new CrawlStats();
 		stats.setTotal( crawlerProperties.getMaxPagesToFetch() );
@@ -115,7 +118,12 @@ public class CrawlerServiceImpl implements CrawlerService
 					crawler.setUp( site, stats );
 					return crawler;
 				};
-		controller.startNonBlocking( factory, crawlerProperties.getNumberOfCrawlers() );
+		if ( nonBlocking ) {
+			controller.startNonBlocking( factory, crawlerProperties.getNumberOfCrawlers() );
+		}
+		else {
+			controller.start( factory, crawlerProperties.getNumberOfCrawlers() );
+		}
 	}
 
 }

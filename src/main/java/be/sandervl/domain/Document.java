@@ -40,7 +40,7 @@ public class Document implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "matches_id", referencedColumnName = "id"))
     private Set<Document> matches = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Site site;
 
     @OneToMany(mappedBy = "document")

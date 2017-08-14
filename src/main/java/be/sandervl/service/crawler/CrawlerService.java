@@ -12,6 +12,14 @@ import java.util.Optional;
  */
 public interface CrawlerService
 {
+	/**
+	 * starts a non blocking crawl for given site
+	 *
+	 * @see CrawlerService#startCrawler(Site)
+	 */
+	default CrawlController startCrawler( Site site ) throws CrawlServiceException {
+		return startCrawler( site, true );
+	}
 
 	/**
 	 * See if there is already a controller running for this site.
@@ -20,10 +28,11 @@ public interface CrawlerService
 	 * If the controller is finished, restart it.
 	 *
 	 * @param site for initializing the crawler.
+	 * @param nonBlocking indicating weather the controller should run in a different thread (if true) or blocks execution in the current thread (if false)
 	 * @return the started controller for the site.
 	 * @throws CrawlServiceException when given site is null or has no seed
 	 */
-	CrawlController startCrawler( Site site ) throws CrawlServiceException;
+	CrawlController startCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException;
 
 	/**
 	 * Look for the controller that is running for the given site and invoke the {@link CrawlController#shutdown} method.
