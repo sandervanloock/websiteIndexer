@@ -7,14 +7,20 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observer;
 import java.util.Optional;
 
 /**
@@ -23,8 +29,8 @@ import java.util.Optional;
 @Service
 public class CrawlerServiceImpl implements CrawlerService
 {
-	public static final UrlValidator URL_VALIDATOR = new UrlValidator();
-	private static Logger log = LoggerFactory.getLogger( CrawlerService.class );
+	private static final Logger LOG = LoggerFactory.getLogger( CrawlerService.class );
+	private static final UrlValidator URL_VALIDATOR = new UrlValidator();
 
 	private final CrawlerProperties crawlerProperties;
 	private final ApplicationContext context;
@@ -46,6 +52,13 @@ public class CrawlerServiceImpl implements CrawlerService
 
 	@Override
 	public CrawlController startCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException {
+		deleteOldCrawlerStoragePath();
+
+		return resumeCrawler( site, nonBlocking );
+	}
+
+	@Override
+	public CrawlController resumeCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException {
 		if ( site == null ) {
 			throw new CrawlServiceException( "Given Site should not be null" );
 		}
@@ -65,13 +78,27 @@ public class CrawlerServiceImpl implements CrawlerService
 	}
 
 	@Override
+	public void deleteOldCrawlerStoragePath() throws CrawlServiceException {
+		try {
+			Path crawlerStoragePath = Paths.get( crawlerProperties.getCrawlStorageFolder() );
+			LOG.debug( "Going to remove old crawler path {}", crawlerStoragePath.toAbsolutePath() );
+			FileUtils.deleteDirectory( crawlerStoragePath.toFile() );
+		}
+		catch ( NullPointerException | InvalidPathException | UnsupportedOperationException | SecurityException | IOException ex ) {
+			LOG.error( "Unable to delete crawler storage path {}", crawlerProperties.getCrawlStorageFolder() );
+			throw new CrawlServiceException(
+					"Unable to delete crawler storage path " + crawlerProperties.getCrawlStorageFolder() );
+		}
+	}
+
+	@Override
 	public boolean stopCrawler( Site site ) {
 		controllers.computeIfPresent( site, ( old, controller ) -> {
 			controller.shutdown();
 			return controller;
 		} );
 		statsMap.computeIfPresent( site, ( old, stats ) -> {
-			stats.setStatus( CrawlStatus.SHUTTING_DOWN );
+			stats.updateStatus( CrawlStatus.SHUTTING_DOWN );
 			return stats;
 		} );
 		return controllers.remove( site ) != null;
@@ -82,6 +109,11 @@ public class CrawlerServiceImpl implements CrawlerService
 		return this.statsMap.containsKey( site ) ?
 				Optional.of( this.statsMap.get( site ) ) :
 				Optional.empty();
+	}
+
+	@Override
+	public void addObserver( Site site, Observer observer ) {
+		getStats( site ).ifPresent( stats -> stats.addObserver( observer ) );
 	}
 
 	private CrawlController createController( Site site, boolean nonBlocking ) throws CrawlServiceException {
@@ -108,12 +140,11 @@ public class CrawlerServiceImpl implements CrawlerService
 
 	private void startController( Site site, CrawlController controller, boolean nonBlocking ) {
 		// share stats object for multiple crawlers, crawler is initialized multiple times
-		CrawlStats stats = new CrawlStats();
-		stats.setTotal( crawlerProperties.getMaxPagesToFetch() );
+		CrawlStats stats = new CrawlStats( crawlerProperties.getMaxPagesToFetch(), site );
 		statsMap.put( site, stats );
 		CrawlController.WebCrawlerFactory<SiteCrawler> factory =
 				() -> {
-					log.info( "Creating new crawler for site {}", site );
+					LOG.info( "Creating new crawler for site {}", site );
 					SiteCrawler crawler = context.getBean( SiteCrawler.class );
 					crawler.setUp( site, stats );
 					return crawler;

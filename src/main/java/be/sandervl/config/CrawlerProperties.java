@@ -21,7 +21,7 @@ public class CrawlerProperties {
 	/**
 	 * @see edu.uci.ics.crawler4j.crawler.CrawlConfig#maxPagesToFetch
 	 */
-	private int maxPagesToFetch = 100;
+	private int maxPagesToFetch = 10000;
 
 	/**
 	 * @see edu.uci.ics.crawler4j.crawler.CrawlConfig#politenessDelay

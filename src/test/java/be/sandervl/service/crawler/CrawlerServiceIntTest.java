@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 @TestPropertySource(properties = {
 		"crawler.maxPagesToFetch=1"
 })
-public class ITCrawlerService
+public class CrawlerServiceIntTest
 {
 	@Autowired
 	private CrawlerService crawlerService;

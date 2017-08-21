@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  * @author Sander Van Loock
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ITSiteCrawler
+public class SiteCrawlerIntTest
 {
 	@Mock
 	private JsoupService jsoupService;
@@ -62,12 +62,9 @@ public class ITSiteCrawler
 	private DocIDServer docIdServer;
 	@Mock
 	private PageFetchResult pageFetchResult;
-	private CrawlStats crawlStats;
 
 	@Before
 	public void setUp() throws Exception {
-		crawlStats = new CrawlStats();
-
 		when( jsoupService.getDocumentFromUrl( "http://www.resto.be" ) ).thenReturn(
 				Optional.of( new org.jsoup.nodes.Document( "http://www.resto.be" ) ) );
 		when( documentRepository.findByUrl( anyString() ) ).thenReturn( Optional.empty() );
@@ -129,7 +126,7 @@ public class ITSiteCrawler
 	                                  int i ) throws InstantiationException, IllegalAccessException, InterruptedException {
 		SiteCrawler siteCrawler = new SiteCrawler( attributeService, selectorRepository, documentRepository,
 		                                           jsoupService );
-		siteCrawler.setUp( site, crawlStats );
+		siteCrawler.setUp( site, new CrawlStats( 4, site ) );
 		Thread thread = new Thread( siteCrawler, "Crawler " + i );
 		siteCrawler.init( i, crawlController );
 		thread.start();

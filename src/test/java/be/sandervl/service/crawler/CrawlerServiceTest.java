@@ -10,7 +10,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -21,15 +25,16 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CrawlerServiceTest
 {
-	private CrawlerService crawlerService;
 	@Mock
 	private ApplicationContext context;
 	@Mock
 	private SiteCrawler siteCrawler;
+	private CrawlerService crawlerService;
+	private CrawlerProperties properties;
 
 	@Before
 	public void setUp() throws Exception {
-		CrawlerProperties properties = new CrawlerProperties();
+		properties = new CrawlerProperties();
 		properties.setNumberOfCrawlers( 1 );
 		when( context.getBean( SiteCrawler.class ) ).thenReturn( siteCrawler );
 		crawlerService = new CrawlerServiceImpl( properties, context );
@@ -123,6 +128,26 @@ public class CrawlerServiceTest
 		assertEquals( 0, stats.get().getNumberVisited() );
 		assertEquals( 0, stats.get().getNewAttributes() );
 		assertEquals( 0, stats.get().getNewDocuments() );
-		assertEquals( 100, stats.get().getTotal() );
+		assertEquals( 10000, stats.get().getTotal() );
+	}
+
+	@Test
+	public void deleteCrawlerStorageFolder() throws Exception {
+		properties.setCrawlStorageFolder( "./target/crawler/" + UUID.randomUUID() );
+		Path dir = Paths.get( properties.getCrawlStorageFolder() );
+		Files.createDirectories( dir );
+		assertTrue( dir.toFile().exists() );
+		crawlerService = new CrawlerServiceImpl( properties, context );
+		Site site = new Site();
+		site.setSeed( "http://www.google.be" );
+		crawlerService.deleteOldCrawlerStoragePath();
+		assertFalse( dir.toFile().exists() );
+	}
+
+	@Test(expected = CrawlServiceException.class)
+	public void unableToDeleteUnexistingCrawlFolder() throws Exception {
+		properties.setCrawlStorageFolder( null );
+		crawlerService = new CrawlerServiceImpl( properties, context );
+		crawlerService.deleteOldCrawlerStoragePath();
 	}
 }

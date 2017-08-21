@@ -37,7 +37,7 @@ public class SiteCrawler extends WebCrawler
 
 	private Pattern pattern = Pattern.compile( ".*" );
 	private Site site;
-	private CrawlStats stats = new CrawlStats();
+	private CrawlStats stats = new CrawlStats( 0, null );
 
 	public SiteCrawler( AttributeService attributeService,
 	                    SelectorRepository selectorRepository,
@@ -94,9 +94,6 @@ public class SiteCrawler extends WebCrawler
 	 */
 	@Override
 	public void visit( Page page ) {
-		if ( !shouldVisit( page, page.getWebURL() ) ) {
-			return;
-		}
 		String url = page.getWebURL().getURL();
 		logger.debug( "Fetching URL: " + url );
 		if ( this.stats != null ) {

@@ -1,71 +1,72 @@
 package be.sandervl.web.rest;
 
 import be.sandervl.domain.Site;
+import be.sandervl.repository.SiteRepository;
+import be.sandervl.service.crawler.CrawlServiceException;
 import be.sandervl.service.crawler.CrawlStats;
 import be.sandervl.service.crawler.CrawlerService;
+import be.sandervl.web.websocket.CrawlStatsService;
+import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author: sander
  * @date: 17/11/2016
  */
-@Controller
-public class CrawlerResource {
+@RestController
+@RequestMapping("/api/crawler")
+public class CrawlerResource
+{
+	private static Logger log = LoggerFactory.getLogger( CrawlerResource.class );
 
-    private static Logger log = LoggerFactory.getLogger(CrawlerResource.class);
+	private final CrawlerService crawlerService;
+	private final CrawlStatsService crawlStatsService;
+	private final SiteRepository siteRepository;
 
-    private final CrawlerService crawlerService;
-    private final SimpMessageSendingOperations messagingTemplate;
+	public CrawlerResource( CrawlerService crawlerService,
+	                        CrawlStatsService crawlStatsService, SiteRepository siteRepository ) {
+		this.crawlerService = crawlerService;
+		this.crawlStatsService = crawlStatsService;
+		this.siteRepository = siteRepository;
+	}
 
-    public CrawlerResource(CrawlerService crawlerService, SimpMessageSendingOperations messagingTemplate) {
-        this.crawlerService = crawlerService;
-        this.messagingTemplate = messagingTemplate;
-    }
+	@GetMapping(value = "/{id:\\d+}/stats")
+	public ResponseEntity getCrawler( @PathVariable(name = "id") Long id ) {
+		Site site = siteRepository.findOne( id );
+		Optional<CrawlStats> stats = crawlerService.getStats( site );
+		return ResponseUtil.wrapOrNotFound( stats );
+	}
 
-    @RequestMapping(method = RequestMethod.GET, value = "/crawler")
-    @ResponseBody
-    public CrawlStats getCrawler(@RequestParam(name = "id") Site site) {
-        return crawlerService.getStats(site).orElse(new CrawlStats());
-    }
+	@DeleteMapping(value = "/{id:\\d+}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void stopCrawler( @PathVariable(name = "id") Long id ) {
+		Site site = siteRepository.findOne( id );
+		crawlerService.stopCrawler( site );
+	}
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/crawler")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
-    public void stopCrawler(@RequestParam(name = "id") Site site) {
-        crawlerService.stopCrawler(site);
-    }
+	@PostMapping(value = "/{id:\\d+}")
+	public Object startCrawler( @PathVariable(name = "id") Long id ) throws IOException {
+		if ( id == null ) {
+			return ResponseEntity.badRequest().build();
+		}
+		Site site = siteRepository.findOne( id );
 
-    @RequestMapping(method = RequestMethod.POST, value = "/crawler")
-    @ResponseBody
-    public CrawlStats startCrawler(@RequestParam(name = "id") Site site) {
-        assertNotNull(site, "Site should not be null");
-
-        log.debug("Starting crawl for site {}", site);
-        CrawlStats response = new CrawlStats();
-        try {
-            crawlerService.startCrawler(site);
-        } catch (Exception e) {
-            log.error("Exception occured while starting new crawl for site {}", site, e);
-        }
-        return response;
-    }
-
-    @SubscribeMapping("/topic/getstat")
-    @SendTo("/topic/crawlstat")
-    public CrawlStats sendCrawlStatus(CrawlStats stats) {
-        log.debug("Sending crawl status {}", stats);
-        messagingTemplate.convertAndSend("/topic/crawlstat", stats);
-        return stats;
-    }
-
+		log.debug( "Starting crawl for site {}", site );
+		try {
+			crawlerService.startCrawler( site );
+			crawlerService.addObserver( site, crawlStatsService );
+		}
+		catch ( CrawlServiceException e ) {
+			log.error( "Exception occurred while starting new crawl for site {}", site, e );
+		}
+		return "redirect:/api/crawler/" + site.getId() + "/stats";
+	}
 
 }

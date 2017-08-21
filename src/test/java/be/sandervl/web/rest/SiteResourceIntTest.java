@@ -35,14 +35,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = WebsiteIndexerApp.class)
 public class SiteResourceIntTest {
 
-    private static final String DEFAULT_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_NAME = "BBBBBBBBBB";
+	private static final String DEFAULT_NAME = "Resto.be";
+	private static final String UPDATED_NAME = "Resto.fr";
 
-    private static final String DEFAULT_REGEX = "AAAAAAAAAA";
-    private static final String UPDATED_REGEX = "BBBBBBBBBB";
+	private static final String DEFAULT_REGEX = ".*";
+	private static final String UPDATED_REGEX = "BBBBBBBBBB";
 
-    private static final String DEFAULT_SEED = "AAAAAAAAAA";
-    private static final String UPDATED_SEED = "BBBBBBBBBB";
+	private static final String DEFAULT_SEED = "http://www.resto.be";
+	private static final String UPDATED_SEED = "http://nl.resto.be";
 
     @Autowired
     private SiteRepository siteRepository;

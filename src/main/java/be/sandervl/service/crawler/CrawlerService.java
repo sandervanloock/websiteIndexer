@@ -3,6 +3,7 @@ package be.sandervl.service.crawler;
 import be.sandervl.domain.Site;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 
+import java.util.Observer;
 import java.util.Optional;
 
 /**
@@ -26,13 +27,34 @@ public interface CrawlerService
 	 * If not already present, initialize a new controller and put it in the map.
 	 * <p/>
 	 * If the controller is finished, restart it.
+	 * <p/>
+	 * The indexed of Frontier are deleted when starting the crawl.  The new indexes are marked as resumable
+	 * ({@see edu.uci.ics.crawler4j.crawler.CrawlConfig#resumableCrawling}) so calling
+	 * {@link CrawlerService#resumeCrawler} can be invoked when pauzed.
 	 *
-	 * @param site for initializing the crawler.
+	 * @param site        for initializing the crawler.
 	 * @param nonBlocking indicating weather the controller should run in a different thread (if true) or blocks execution in the current thread (if false)
 	 * @return the started controller for the site.
 	 * @throws CrawlServiceException when given site is null or has no seed
 	 */
 	CrawlController startCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException;
+
+	/**
+	 * Same bevahiour as {@link CrawlerService#startCrawler(Site, boolean)} except the Frontier crawler storage folder
+	 * is not deleted prior to starting the crawler.
+	 *
+	 * @see CrawlerService#startCrawler(Site, boolean)
+	 */
+	CrawlController resumeCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException;
+
+	/**
+	 * Delete the crawler storage folder as configured in the {@code CrawlerProperties}.
+	 *
+	 * @return true if and only if the deletion of the folder succeeded.
+	 * @throws CrawlServiceException When the deletion of the folder fails due to an invalid path or insufficient access rights.
+	 * @see be.sandervl.config.CrawlerProperties#crawlStorageFolder
+	 */
+	void deleteOldCrawlerStoragePath() throws CrawlServiceException;
 
 	/**
 	 * Look for the controller that is running for the given site and invoke the {@link CrawlController#shutdown} method.
@@ -51,4 +73,12 @@ public interface CrawlerService
 	 * @return an optional {@code CrawlStats} for the site
 	 */
 	Optional<CrawlStats> getStats( Site site );
+
+	/**
+	 * Add an observer to the {@code CrawlStats} observable of the given site.
+	 *
+	 * @param site     the site to observe stats changes.
+	 * @param observer the new observer.
+	 */
+	void addObserver( Site site, Observer observer );
 }
