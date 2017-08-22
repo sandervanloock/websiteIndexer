@@ -101,7 +101,7 @@ public class SiteCrawler extends WebCrawler
 	@Override
 	public void visit( Page page ) {
 		String url = page.getWebURL().getURL();
-		logger.debug( "Fetching URL: " + url );
+		logger.debug( "Fetching URL: {}", url );
 		if ( this.stats != null ) {
 			this.stats.incNumberProcessed();
 		}

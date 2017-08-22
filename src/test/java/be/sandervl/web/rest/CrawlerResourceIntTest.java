@@ -27,7 +27,6 @@ import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -109,8 +108,7 @@ public class CrawlerResourceIntTest
 	}
 
 	@Test
-	@Transactional
-	public void startCrawler() throws Exception {
+	public void fullCrawlerTest() throws Exception {
 		//start a crawler from API
 		restCrawlerMockMvc.perform( post( "/api/crawler/" + site.getId() + "/start" ) )
 		                  .andExpect( content().string( containsString( "/api/crawler/" + site.getId() + "/stats" ) ) );
@@ -124,7 +122,7 @@ public class CrawlerResourceIntTest
 		//get first message from web socket
 		long start = System.currentTimeMillis();
 		boolean found = false;
-		//wait until 500 pages are visited
+		//wait until 1 page is processed
 		while ( System.currentTimeMillis() - start < 10000 ) {
 			if ( JsonPath.parse( blockingQueue.poll( 1, MINUTES ) ).read( "$.numberProcessed", Integer.class ) >= 1 ) {
 				found = true;
@@ -143,6 +141,20 @@ public class CrawlerResourceIntTest
 		                  .andExpect( status().isOk() )
 		                  .andExpect( content().contentTypeCompatibleWith( MediaType.APPLICATION_JSON ) )
 		                  .andExpect( jsonPath( "$.status", is( CrawlStatus.SHUTTING_DOWN.name() ) ) );
+
+		//resume the crawler
+		restCrawlerMockMvc.perform( post( "/api/crawler/" + site.getId() + "/resume" ) )
+		                  .andExpect( content().string( containsString( "/api/crawler/" + site.getId() + "/stats" ) ) );
+
+		//get stats, and verify correct status
+		restCrawlerMockMvc.perform( get( "/api/crawler/" + site.getId() + "/stats" ) )
+		                  .andExpect( status().isOk() )
+		                  .andExpect( content().contentTypeCompatibleWith( MediaType.APPLICATION_JSON ) )
+		                  .andExpect( jsonPath( "$.status", is( CrawlStatus.RUNNING.name() ) ) );
+
+		//stop the crawler
+		restCrawlerMockMvc.perform( post( "/api/crawler/" + site.getId() + "/stop" ) )
+		                  .andExpect( status().isNoContent() );
 
 	}
 
