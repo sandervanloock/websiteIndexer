@@ -105,7 +105,8 @@ public class SiteCrawlerIntTest
 	public void verifyCrawlWithOneInstance() throws Exception {
 		Site site = new Site();
 		site.setRegex( "http://www.resto.be" );
-		spawnCrawler( site, 1 );
+		CrawlStats crawlStats = new CrawlStats( 4, site );
+		spawnCrawler( site, crawlStats, 1 );
 		Thread.sleep( 3000 );
 		verify( documentRepository, times( 4 ) ).save( any( Document.class ) );
 	}
@@ -114,8 +115,9 @@ public class SiteCrawlerIntTest
 	public void verifyCrawlWithTwoCrawlers() throws Exception {
 		Site site = new Site();
 		site.setRegex( "http://www.resto.be" );
-		SiteCrawler siteCrawler1 = spawnCrawler( site, 1 );
-		SiteCrawler siteCrawler2 = spawnCrawler( site, 2 );
+		CrawlStats crawlStats = new CrawlStats( 4, site );
+		SiteCrawler siteCrawler1 = spawnCrawler( site, crawlStats, 1 );
+		SiteCrawler siteCrawler2 = spawnCrawler( site, crawlStats, 2 );
 		Thread.sleep( 3000 );
 		verify( documentRepository, times( 4 ) ).save( any( Document.class ) );
 		assertSame( siteCrawler1.getMyLocalData(), siteCrawler2.getMyLocalData() );
@@ -123,11 +125,12 @@ public class SiteCrawlerIntTest
 	}
 
 	private SiteCrawler spawnCrawler( Site site,
+	                                  CrawlStats crawlStats,
 	                                  int i ) throws InstantiationException, IllegalAccessException, InterruptedException {
 		SiteCrawler siteCrawler = new SiteCrawler( attributeService, selectorRepository, documentRepository,
 		                                           jsoupService );
-		siteCrawler.setUp( site, new CrawlStats( 4, site ) );
 		Thread thread = new Thread( siteCrawler, "Crawler " + i );
+		siteCrawler.setUp( site, crawlStats );
 		siteCrawler.init( i, crawlController );
 		thread.start();
 		return siteCrawler;
