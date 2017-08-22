@@ -38,6 +38,5 @@ public class CrawlerResourceTest
 		resource.startCrawler( 1L );
 
 		verify( crawlerService, times( 1 ) ).startCrawler( site );
-		verify( crawlerService, times( 1 ) ).addObserver( site, crawlStatsService );
 	}
 }

@@ -8,6 +8,7 @@ import be.sandervl.repository.DocumentRepository;
 import be.sandervl.repository.SelectorRepository;
 import be.sandervl.service.AttributeService;
 import be.sandervl.service.jsoup.JsoupService;
+import be.sandervl.web.websocket.CrawlStatsService;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.url.WebURL;
@@ -34,6 +35,7 @@ public class SiteCrawler extends WebCrawler
 	private final SelectorRepository selectorRepository;
 	private final DocumentRepository documentRepository;
 	private final JsoupService jsoupService;
+	private final CrawlStatsService crawlStatsService;
 
 	private Pattern pattern = Pattern.compile( ".*" );
 	private Site site;
@@ -42,11 +44,13 @@ public class SiteCrawler extends WebCrawler
 	public SiteCrawler( AttributeService attributeService,
 	                    SelectorRepository selectorRepository,
 	                    DocumentRepository documentRepository,
-	                    JsoupService jsoupService ) {
+	                    JsoupService jsoupService,
+	                    CrawlStatsService crawlStatsService ) {
 		this.attributeService = attributeService;
 		this.selectorRepository = selectorRepository;
 		this.documentRepository = documentRepository;
 		this.jsoupService = jsoupService;
+		this.crawlStatsService = crawlStatsService;
 	}
 
 	public void setUp( Site site, CrawlStats crawlStats ) {
@@ -60,12 +64,14 @@ public class SiteCrawler extends WebCrawler
 	@Override
 	public void onStart() {
 		this.stats.incCrawlersRunning();
+		this.stats.addObserver( crawlStatsService );
 		super.onStart();
 	}
 
 	@Override
 	public void onBeforeExit() {
 		this.stats.decCrawlersRunning();
+		this.stats.deleteObserver( crawlStatsService );
 		super.onBeforeExit();
 	}
 

@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observer;
 import java.util.Optional;
 
 /**
@@ -109,11 +108,6 @@ public class CrawlerServiceImpl implements CrawlerService
 		return this.statsMap.containsKey( site ) ?
 				Optional.of( this.statsMap.get( site ) ) :
 				Optional.empty();
-	}
-
-	@Override
-	public void addObserver( Site site, Observer observer ) {
-		getStats( site ).ifPresent( stats -> stats.addObserver( observer ) );
 	}
 
 	private CrawlController createController( Site site, boolean nonBlocking ) throws CrawlServiceException {

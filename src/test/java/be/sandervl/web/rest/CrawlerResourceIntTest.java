@@ -44,7 +44,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -111,7 +112,7 @@ public class CrawlerResourceIntTest
 	@Transactional
 	public void startCrawler() throws Exception {
 		//start a crawler from API
-		restCrawlerMockMvc.perform( post( "/api/crawler/" + site.getId() ) )
+		restCrawlerMockMvc.perform( post( "/api/crawler/" + site.getId() + "/start" ) )
 		                  .andExpect( content().string( containsString( "/api/crawler/" + site.getId() + "/stats" ) ) );
 
 		//get stats from crawler
@@ -134,7 +135,7 @@ public class CrawlerResourceIntTest
 		assertTrue( found );
 
 		//stop the crawler
-		restCrawlerMockMvc.perform( delete( "/api/crawler/" + site.getId() ) )
+		restCrawlerMockMvc.perform( post( "/api/crawler/" + site.getId() + "/stop" ) )
 		                  .andExpect( status().isNoContent() );
 
 		//get stats, and verify correct status

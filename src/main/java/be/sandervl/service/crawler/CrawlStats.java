@@ -2,6 +2,7 @@ package be.sandervl.service.crawler;
 
 import be.sandervl.domain.Site;
 
+import java.time.ZonedDateTime;
 import java.util.Observable;
 
 /**
@@ -40,6 +41,11 @@ public class CrawlStats extends Observable
      * Number of new attributes created while processing the site.
      */
     private int newAttributes = 0;
+
+    /**
+     * Time when crawl started
+     */
+    private ZonedDateTime startedDate;
 
     /**
      * Status of crawling
@@ -125,6 +131,10 @@ public class CrawlStats extends Observable
         return newAttributes;
     }
 
+    public ZonedDateTime getStartedDate() {
+        return startedDate;
+    }
+
     public CrawlStatus getStatus() {
         return status;
     }
@@ -153,6 +163,10 @@ public class CrawlStats extends Observable
         this.status = status;
     }
 
+    public void setStartedDate( ZonedDateTime startedDate ) {
+        this.startedDate = startedDate;
+    }
+
     @Override
     public void notifyObservers() {
         super.setChanged();
@@ -166,6 +180,7 @@ public class CrawlStats extends Observable
                 ", numberProcessed=" + numberProcessed +
                 ", total=" + total +
                 ", crawlersRunning=" + crawlersRunning +
+                ", startedDate=" + startedDate +
                 '}';
     }
 }

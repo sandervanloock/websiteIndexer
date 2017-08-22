@@ -3,7 +3,6 @@ package be.sandervl.service.crawler;
 import be.sandervl.domain.Site;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 
-import java.util.Observer;
 import java.util.Optional;
 
 /**
@@ -14,12 +13,21 @@ import java.util.Optional;
 public interface CrawlerService
 {
 	/**
-	 * starts a non blocking crawl for given site
+	 * starts a non-blocking crawl for given site.
 	 *
-	 * @see CrawlerService#startCrawler(Site)
+	 * @see CrawlerService#startCrawler(Site, boolean)
 	 */
 	default CrawlController startCrawler( Site site ) throws CrawlServiceException {
 		return startCrawler( site, true );
+	}
+
+	/**
+	 * resumes a non-blocking crawl for given site.
+	 *
+	 * @see CrawlerService#resumeCrawler(Site, boolean)
+	 */
+	default CrawlController resumeCrawler( Site site ) throws CrawlServiceException {
+		return resumeCrawler( site, true );
 	}
 
 	/**
@@ -35,7 +43,7 @@ public interface CrawlerService
 	 * @param site        for initializing the crawler.
 	 * @param nonBlocking indicating weather the controller should run in a different thread (if true) or blocks execution in the current thread (if false)
 	 * @return the started controller for the site.
-	 * @throws CrawlServiceException when given site is null or has no seed
+	 * @throws CrawlServiceException when given site is null or has no seed.
 	 */
 	CrawlController startCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException;
 
@@ -43,6 +51,7 @@ public interface CrawlerService
 	 * Same bevahiour as {@link CrawlerService#startCrawler(Site, boolean)} except the Frontier crawler storage folder
 	 * is not deleted prior to starting the crawler.
 	 *
+	 * @throws CrawlServiceException when given site is null or has no seed.
 	 * @see CrawlerService#startCrawler(Site, boolean)
 	 */
 	CrawlController resumeCrawler( Site site, boolean nonBlocking ) throws CrawlServiceException;
@@ -73,12 +82,4 @@ public interface CrawlerService
 	 * @return an optional {@code CrawlStats} for the site
 	 */
 	Optional<CrawlStats> getStats( Site site );
-
-	/**
-	 * Add an observer to the {@code CrawlStats} observable of the given site.
-	 *
-	 * @param site     the site to observe stats changes.
-	 * @param observer the new observer.
-	 */
-	void addObserver( Site site, Observer observer );
 }

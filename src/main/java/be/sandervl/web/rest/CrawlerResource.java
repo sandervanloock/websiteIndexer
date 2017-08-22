@@ -24,7 +24,7 @@ import java.util.Optional;
 @RequestMapping("/api/crawler")
 public class CrawlerResource
 {
-	private static Logger log = LoggerFactory.getLogger( CrawlerResource.class );
+	private static Logger LOG = LoggerFactory.getLogger( CrawlerResource.class );
 
 	private final CrawlerService crawlerService;
 	private final CrawlStatsService crawlStatsService;
@@ -44,29 +44,55 @@ public class CrawlerResource
 		return ResponseUtil.wrapOrNotFound( stats );
 	}
 
-	@DeleteMapping(value = "/{id:\\d+}")
+	@PostMapping(value = "/{id:\\d+}/stop")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void stopCrawler( @PathVariable(name = "id") Long id ) {
 		Site site = siteRepository.findOne( id );
+
+		LOG.debug( "Stopping crawl for site {}", site );
 		crawlerService.stopCrawler( site );
 	}
 
-	@PostMapping(value = "/{id:\\d+}")
-	public Object startCrawler( @PathVariable(name = "id") Long id ) throws IOException {
-		if ( id == null ) {
+	@PostMapping(value = "/{id:\\d+}/resume")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public Object resumeCrawler( @PathVariable(name = "id") Long id ) {
+		if ( validSiteId( id ) ) {
 			return ResponseEntity.badRequest().build();
 		}
 		Site site = siteRepository.findOne( id );
 
-		log.debug( "Starting crawl for site {}", site );
+		LOG.debug( "Resuming crawl for site {}", site );
 		try {
-			crawlerService.startCrawler( site );
-			crawlerService.addObserver( site, crawlStatsService );
+			crawlerService.resumeCrawler( site );
 		}
 		catch ( CrawlServiceException e ) {
-			log.error( "Exception occurred while starting new crawl for site {}", site, e );
+			LOG.error( "Exception occurred while resuming crawl for site {}", site, e );
 		}
 		return "redirect:/api/crawler/" + site.getId() + "/stats";
+	}
+
+	@PostMapping(value = "/{id:\\d+}/start")
+	public Object startCrawler( @PathVariable(name = "id") Long id ) throws IOException {
+		if ( validSiteId( id ) ) {
+			return ResponseEntity.badRequest().build();
+		}
+		Site site = siteRepository.findOne( id );
+
+		LOG.debug( "Starting crawl for site {}", site );
+		try {
+			crawlerService.startCrawler( site );
+		}
+		catch ( CrawlServiceException e ) {
+			LOG.error( "Exception occurred while starting new crawl for site {}", site, e );
+		}
+		return "redirect:/api/crawler/" + site.getId() + "/stats";
+	}
+
+	private boolean validSiteId( @PathVariable(name = "id") Long id ) {
+		if ( id == null ) {
+			return true;
+		}
+		return false;
 	}
 
 }

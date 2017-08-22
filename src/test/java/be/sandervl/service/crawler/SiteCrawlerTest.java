@@ -9,6 +9,7 @@ import be.sandervl.repository.SelectorRepository;
 import be.sandervl.service.AttributeService;
 import be.sandervl.service.jsoup.JsoupService;
 import be.sandervl.service.jsoup.JsoupServiceImpl;
+import be.sandervl.web.websocket.CrawlStatsService;
 import edu.uci.ics.crawler4j.crawler.Page;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +51,8 @@ public class SiteCrawlerTest
 	@Mock
 	private SelectorRepository selectorRepository;
 
+	@Mock
+	private CrawlStatsService crawlStatsService;
 	private SiteCrawler siteCrawler;
 
 	//@Mock
@@ -58,7 +61,7 @@ public class SiteCrawlerTest
 	@Before
 	public void setUp() throws Exception {
 		siteCrawler = new SiteCrawler( attributeService, selectorRepository, documentRepository,
-		                               jsoupService );
+		                               jsoupService, crawlStatsService );
 		doReturn( Optional.of( mock( org.jsoup.nodes.Document.class ) ) ).when( jsoupService ).getDocumentFromUrl(
 				anyString() );
 

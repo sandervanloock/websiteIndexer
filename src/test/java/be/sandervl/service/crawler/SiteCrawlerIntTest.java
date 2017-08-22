@@ -7,6 +7,7 @@ import be.sandervl.repository.SelectorRepository;
 import be.sandervl.service.AttributeService;
 import be.sandervl.service.jsoup.JsoupService;
 import be.sandervl.web.rest.CrawlerResource;
+import be.sandervl.web.websocket.CrawlStatsService;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.crawler.Page;
@@ -62,6 +63,8 @@ public class SiteCrawlerIntTest
 	private DocIDServer docIdServer;
 	@Mock
 	private PageFetchResult pageFetchResult;
+	@Mock
+	private CrawlStatsService crawlStatsService;
 
 	@Before
 	public void setUp() throws Exception {
@@ -128,7 +131,7 @@ public class SiteCrawlerIntTest
 	                                  CrawlStats crawlStats,
 	                                  int i ) throws InstantiationException, IllegalAccessException, InterruptedException {
 		SiteCrawler siteCrawler = new SiteCrawler( attributeService, selectorRepository, documentRepository,
-		                                           jsoupService );
+		                                           jsoupService, crawlStatsService );
 		Thread thread = new Thread( siteCrawler, "Crawler " + i );
 		siteCrawler.setUp( site, crawlStats );
 		siteCrawler.init( i, crawlController );
