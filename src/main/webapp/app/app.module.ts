@@ -1,29 +1,27 @@
 import './vendor.ts';
 
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { Ng2Webstorage } from 'ng2-webstorage';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {Ng2Webstorage} from 'ng2-webstorage';
 
-import { WebsiteIndexerSharedModule, UserRouteAccessService } from './shared';
-import { WebsiteIndexerHomeModule } from './home/home.module';
-import { WebsiteIndexerAdminModule } from './admin/admin.module';
-import { WebsiteIndexerAccountModule } from './account/account.module';
-import { WebsiteIndexerEntityModule } from './entities/entity.module';
+import {UserRouteAccessService, WebsiteIndexerSharedModule} from './shared';
+import {WebsiteIndexerHomeModule} from './home/home.module';
+import {WebsiteIndexerAdminModule} from './admin/admin.module';
+import {WebsiteIndexerAccountModule} from './account/account.module';
+import {WebsiteIndexerEntityModule} from './entities/entity.module';
+import {TasksModule} from './tasks/tasks.module';
 
-import { customHttpProvider } from './blocks/interceptor/http.provider';
-import { PaginationConfig } from './blocks/config/uib-pagination.config';
-
-// jhipster-needle-angular-add-module-import JHipster will add new module here
-
+import {customHttpProvider} from './blocks/interceptor/http.provider';
+import {PaginationConfig} from './blocks/config/uib-pagination.config';
 import {
+    ErrorComponent, FooterComponent,
     JhiMainComponent,
     LayoutRoutingModule,
     NavbarComponent,
-    FooterComponent,
-    ProfileService,
-    PageRibbonComponent,
-    ErrorComponent
+    PageRibbonComponent, ProfileService
 } from './layouts';
+
+// jhipster-needle-angular-add-module-import JHipster will add new module here
 
 @NgModule({
     imports: [
@@ -36,6 +34,7 @@ import {
         WebsiteIndexerAccountModule,
         WebsiteIndexerEntityModule,
         // jhipster-needle-angular-add-module JHipster will add new module here
+        TasksModule
     ],
     declarations: [
         JhiMainComponent,
