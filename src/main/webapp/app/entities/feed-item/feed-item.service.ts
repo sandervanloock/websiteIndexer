@@ -10,46 +10,46 @@ export class FeedItemService {
 
     private resourceUrl = 'api/feed-items';
 
-    constructor(private http: Http) {
+    constructor( private http: Http ) {
     }
 
-    create(feedItem: FeedItem): Observable<FeedItem> {
-        const copy = this.convert(feedItem);
-        return this.http.post(this.resourceUrl, copy).map((res: Response) => {
+    create( feedItem: FeedItem ): Observable<FeedItem> {
+        const copy = this.convert( feedItem );
+        return this.http.post( this.resourceUrl, copy ).map( ( res: Response ) => {
             return res.json();
-        });
+        } );
     }
 
-    update(feedItem: FeedItem): Observable<FeedItem> {
-        const copy = this.convert(feedItem);
-        return this.http.put(this.resourceUrl, copy).map((res: Response) => {
+    update( feedItem: FeedItem ): Observable<FeedItem> {
+        const copy = this.convert( feedItem );
+        return this.http.put( this.resourceUrl, copy ).map( ( res: Response ) => {
             return res.json();
-        });
+        } );
     }
 
-    find(id: number): Observable<FeedItem> {
-        return this.http.get(`${this.resourceUrl}/${id}`).map((res: Response) => {
+    find( id: number ): Observable<FeedItem> {
+        return this.http.get( `${this.resourceUrl}/${id}` ).map( ( res: Response ) => {
             return res.json();
-        });
+        } );
     }
 
-    query(req?: any): Observable<ResponseWrapper> {
-        const options = createRequestOption(req);
-        return this.http.get(this.resourceUrl, options)
-            .map((res: Response) => this.convertResponse(res));
+    query( req?: any ): Observable<ResponseWrapper> {
+        const options = createRequestOption( req );
+        return this.http.get( this.resourceUrl, options )
+            .map( ( res: Response ) => this.convertResponse( res ) );
     }
 
-    delete(id: number): Observable<Response> {
-        return this.http.delete(`${this.resourceUrl}/${id}`);
+    delete( id: number ): Observable<Response> {
+        return this.http.delete( `${this.resourceUrl}/${id}` );
     }
 
-    private convertResponse(res: Response): ResponseWrapper {
+    private convertResponse( res: Response ): ResponseWrapper {
         const jsonResponse = res.json();
-        return new ResponseWrapper(res.headers, jsonResponse, res.status);
+        return new ResponseWrapper( res.headers, jsonResponse, res.status );
     }
 
-    private convert(feedItem: FeedItem): FeedItem {
-        const copy: FeedItem = Object.assign({}, feedItem);
+    private convert( feedItem: FeedItem ): FeedItem {
+        const copy: FeedItem = Object.assign( {}, feedItem );
         return copy;
     }
 }

@@ -25,7 +25,9 @@
             </thead>
             <tr *ngFor="let audit of getAudits()">
                 <td><span>{{audit.timestamp| date:'medium'}}</span></td>
-                <td><small>{{audit.principal}}</small></td>
+                <td>
+                    <small>{{audit.principal}}</small>
+                </td>
                 <td>{{audit.type}}</td>
                 <td>
                     <span *ngIf="audit.data" ng-show="audit.data.message">{{audit.data.message}}</span>

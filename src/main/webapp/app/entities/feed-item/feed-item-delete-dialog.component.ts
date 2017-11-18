@@ -8,51 +8,45 @@ import {FeedItem} from './feed-item.model';
 import {FeedItemPopupService} from './feed-item-popup.service';
 import {FeedItemService} from './feed-item.service';
 
-@Component({
-    selector: 'jhi-feed-item-delete-dialog',
-    templateUrl: './feed-item-delete-dialog.component.html'
-})
+@Component( {
+                selector: 'jhi-feed-item-delete-dialog', templateUrl: './feed-item-delete-dialog.component.html'
+            } )
 export class FeedItemDeleteDialogComponent {
 
     feedItem: FeedItem;
 
-    constructor(private feedItemService: FeedItemService,
-                public activeModal: NgbActiveModal,
-                private eventManager: JhiEventManager) {
+    constructor( private feedItemService: FeedItemService, public activeModal: NgbActiveModal, private eventManager: JhiEventManager ) {
     }
 
     clear() {
-        this.activeModal.dismiss('cancel');
+        this.activeModal.dismiss( 'cancel' );
     }
 
-    confirmDelete(id: number) {
-        this.feedItemService.delete(id).subscribe((response) => {
-            this.eventManager.broadcast({
-                name: 'feedItemListModification',
-                content: 'Deleted an feedItem'
-            });
-            this.activeModal.dismiss(true);
-        });
+    confirmDelete( id: number ) {
+        this.feedItemService.delete( id ).subscribe( ( response ) => {
+            this.eventManager.broadcast( {
+                                             name: 'feedItemListModification', content: 'Deleted an feedItem'
+                                         } );
+            this.activeModal.dismiss( true );
+        } );
     }
 }
 
-@Component({
-    selector: 'jhi-feed-item-delete-popup',
-    template: ''
-})
+@Component( {
+                selector: 'jhi-feed-item-delete-popup', template: ''
+            } )
 export class FeedItemDeletePopupComponent implements OnInit, OnDestroy {
 
     routeSub: any;
 
-    constructor(private route: ActivatedRoute,
-                private feedItemPopupService: FeedItemPopupService) {
+    constructor( private route: ActivatedRoute, private feedItemPopupService: FeedItemPopupService ) {
     }
 
     ngOnInit() {
-        this.routeSub = this.route.params.subscribe((params) => {
+        this.routeSub = this.route.params.subscribe( ( params ) => {
             this.feedItemPopupService
-                .open(FeedItemDeleteDialogComponent as Component, params['id']);
-        });
+                .open( FeedItemDeleteDialogComponent as Component, params['id'] );
+        } );
     }
 
     ngOnDestroy() {

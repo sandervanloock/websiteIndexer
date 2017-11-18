@@ -25,9 +25,7 @@ export class User {
         createdBy?: string,
         createdDate?: Date,
         lastModifiedBy?: string,
-        lastModifiedDate?: Date,
-        password?: string
-    ) {
+        lastModifiedDate?: Date, password?: string ) {
         this.id = id ? id : null;
         this.login = login ? login : null;
         this.firstName = firstName ? firstName : null;

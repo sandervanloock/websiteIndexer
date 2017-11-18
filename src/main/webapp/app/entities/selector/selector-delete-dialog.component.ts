@@ -8,51 +8,45 @@ import {Selector} from './selector.model';
 import {SelectorPopupService} from './selector-popup.service';
 import {SelectorService} from './selector.service';
 
-@Component({
-    selector: 'jhi-selector-delete-dialog',
-    templateUrl: './selector-delete-dialog.component.html'
-})
+@Component( {
+                selector: 'jhi-selector-delete-dialog', templateUrl: './selector-delete-dialog.component.html'
+            } )
 export class SelectorDeleteDialogComponent {
 
     selector: Selector;
 
-    constructor(private selectorService: SelectorService,
-                public activeModal: NgbActiveModal,
-                private eventManager: JhiEventManager) {
+    constructor( private selectorService: SelectorService, public activeModal: NgbActiveModal, private eventManager: JhiEventManager ) {
     }
 
     clear() {
-        this.activeModal.dismiss('cancel');
+        this.activeModal.dismiss( 'cancel' );
     }
 
-    confirmDelete(id: number) {
-        this.selectorService.delete(id).subscribe((response) => {
-            this.eventManager.broadcast({
-                name: 'selectorListModification',
-                content: 'Deleted an selector'
-            });
-            this.activeModal.dismiss(true);
-        });
+    confirmDelete( id: number ) {
+        this.selectorService.delete( id ).subscribe( ( response ) => {
+            this.eventManager.broadcast( {
+                                             name: 'selectorListModification', content: 'Deleted an selector'
+                                         } );
+            this.activeModal.dismiss( true );
+        } );
     }
 }
 
-@Component({
-    selector: 'jhi-selector-delete-popup',
-    template: ''
-})
+@Component( {
+                selector: 'jhi-selector-delete-popup', template: ''
+            } )
 export class SelectorDeletePopupComponent implements OnInit, OnDestroy {
 
     routeSub: any;
 
-    constructor(private route: ActivatedRoute,
-                private selectorPopupService: SelectorPopupService) {
+    constructor( private route: ActivatedRoute, private selectorPopupService: SelectorPopupService ) {
     }
 
     ngOnInit() {
-        this.routeSub = this.route.params.subscribe((params) => {
+        this.routeSub = this.route.params.subscribe( ( params ) => {
             this.selectorPopupService
-                .open(SelectorDeleteDialogComponent as Component, params['id']);
-        });
+                .open( SelectorDeleteDialogComponent as Component, params['id'] );
+        } );
     }
 
     ngOnDestroy() {

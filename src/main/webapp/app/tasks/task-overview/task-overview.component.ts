@@ -7,16 +7,13 @@ import {Site} from '../../entities/site/site.model';
 @Component( {
                 selector: 'jhi-task-overview', templateUrl: './task-overview.component.html', styles: []
             } )
-export class TaskOverviewComponent implements OnInit
-{
+export class TaskOverviewComponent implements OnInit {
     sites: Site[];
 
-    constructor( private taskService: TasksService, private siteService: SiteService )
-    {
+    constructor( private taskService: TasksService, private siteService: SiteService ) {
     }
 
-    ngOnInit()
-    {
+    ngOnInit() {
         this.siteService.query( {
                                     page: 0, size: 10
                                 } ).subscribe( ( res: ResponseWrapper ) => this.sites = res.json );

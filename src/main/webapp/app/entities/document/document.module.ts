@@ -16,37 +16,15 @@ import {
     DocumentService,
 } from './';
 
-const ENTITY_STATES = [
-    ...documentRoute,
-    ...documentPopupRoute,
-];
+const ENTITY_STATES = [...documentRoute, ...documentPopupRoute];
 
-@NgModule({
-    imports: [
-        WebsiteIndexerSharedModule,
-        RouterModule.forRoot(ENTITY_STATES, {useHash: true})
-    ],
-    declarations: [
-        DocumentComponent,
-        DocumentDetailComponent,
-        DocumentDialogComponent,
-        DocumentDeleteDialogComponent,
-        DocumentPopupComponent,
-        DocumentDeletePopupComponent,
-    ],
-    entryComponents: [
-        DocumentComponent,
-        DocumentDialogComponent,
-        DocumentPopupComponent,
-        DocumentDeleteDialogComponent,
-        DocumentDeletePopupComponent,
-    ],
-    providers: [
-        DocumentService,
-        DocumentPopupService,
-        DocumentResolvePagingParams,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
+@NgModule( {
+               imports: [WebsiteIndexerSharedModule, RouterModule.forRoot( ENTITY_STATES, {useHash: true} )],
+               declarations: [DocumentComponent, DocumentDetailComponent, DocumentDialogComponent, DocumentDeleteDialogComponent, DocumentPopupComponent,
+                              DocumentDeletePopupComponent],
+               entryComponents: [DocumentComponent, DocumentDialogComponent, DocumentPopupComponent, DocumentDeleteDialogComponent, DocumentDeletePopupComponent],
+               providers: [DocumentService, DocumentPopupService, DocumentResolvePagingParams],
+               schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           } )
 export class WebsiteIndexerDocumentModule {
 }

@@ -10,19 +10,15 @@ import {FeedItem} from './feed-item.model';
 import {FeedItemPopupService} from './feed-item-popup.service';
 import {FeedItemService} from './feed-item.service';
 
-@Component({
-    selector: 'jhi-feed-item-dialog',
-    templateUrl: './feed-item-dialog.component.html'
-})
+@Component( {
+                selector: 'jhi-feed-item-dialog', templateUrl: './feed-item-dialog.component.html'
+            } )
 export class FeedItemDialogComponent implements OnInit {
 
     feedItem: FeedItem;
     isSaving: boolean;
 
-    constructor(public activeModal: NgbActiveModal,
-                private alertService: JhiAlertService,
-                private feedItemService: FeedItemService,
-                private eventManager: JhiEventManager) {
+    constructor( public activeModal: NgbActiveModal, private alertService: JhiAlertService, private feedItemService: FeedItemService, private eventManager: JhiEventManager ) {
     }
 
     ngOnInit() {
@@ -30,68 +26,63 @@ export class FeedItemDialogComponent implements OnInit {
     }
 
     clear() {
-        this.activeModal.dismiss('cancel');
+        this.activeModal.dismiss( 'cancel' );
     }
 
     save() {
         this.isSaving = true;
-        if (this.feedItem.id !== undefined) {
-            this.subscribeToSaveResponse(
-                this.feedItemService.update(this.feedItem));
+        if ( this.feedItem.id !== undefined ) {
+            this.subscribeToSaveResponse( this.feedItemService.update( this.feedItem ) );
         } else {
-            this.subscribeToSaveResponse(
-                this.feedItemService.create(this.feedItem));
+            this.subscribeToSaveResponse( this.feedItemService.create( this.feedItem ) );
         }
     }
 
-    private subscribeToSaveResponse(result: Observable<FeedItem>) {
-        result.subscribe((res: FeedItem) =>
-            this.onSaveSuccess(res), (res: Response) => this.onSaveError(res));
+    private subscribeToSaveResponse( result: Observable<FeedItem> ) {
+        result.subscribe( ( res: FeedItem ) => this.onSaveSuccess( res ), ( res: Response ) => this.onSaveError( res ) );
     }
 
-    private onSaveSuccess(result: FeedItem) {
-        this.eventManager.broadcast({name: 'feedItemListModification', content: 'OK'});
+    private onSaveSuccess( result: FeedItem ) {
+        this.eventManager.broadcast( {name: 'feedItemListModification', content: 'OK'} );
         this.isSaving = false;
-        this.activeModal.dismiss(result);
+        this.activeModal.dismiss( result );
     }
 
-    private onSaveError(error) {
+    private onSaveError( error ) {
         try {
             error.json();
-        } catch (exception) {
+        } catch ( exception ) {
             error.message = error.text();
         }
         this.isSaving = false;
-        this.onError(error);
+        this.onError( error );
     }
 
-    private onError(error) {
-        this.alertService.error(error.message, null, null);
+    private onError( error ) {
+        this.alertService.error( error.message, null, null );
     }
 }
 
-@Component({
-    selector: 'jhi-feed-item-popup',
-    template: ''
-})
+@Component( {
+                selector: 'jhi-feed-item-popup', template: ''
+            } )
 export class FeedItemPopupComponent implements OnInit, OnDestroy {
 
     routeSub: any;
 
-    constructor(private route: ActivatedRoute,
-                private feedItemPopupService: FeedItemPopupService) {
+    constructor( private route: ActivatedRoute, private feedItemPopupService: FeedItemPopupService ) {
     }
 
     ngOnInit() {
-        this.routeSub = this.route.params.subscribe((params) => {
-            if (params['id']) {
+        this.routeSub = this.route.params.subscribe( ( params ) => {
+            if ( params['id'] ) {
                 this.feedItemPopupService
-                    .open(FeedItemDialogComponent as Component, params['id']);
+                    .open( FeedItemDialogComponent as Component, params['id'] );
             } else {
                 this.feedItemPopupService
-                    .open(FeedItemDialogComponent as Component);
+                    .open( FeedItemDialogComponent as Component );
             }
-        });
+        } );
     }
 
     ngOnDestroy() {

@@ -12,6 +12,5 @@ import {TasksService} from './task-overview/tasks.service';
                    }, canActivate: [UserRouteAccessService], // outlet: 'popup'
                }], {useHash: true} )], declarations: [TaskOverviewComponent], providers: [TasksService]
            } )
-export class TasksModule
-{
+export class TasksModule {
 }

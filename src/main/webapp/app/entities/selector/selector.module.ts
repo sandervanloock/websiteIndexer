@@ -15,36 +15,15 @@ import {
     SelectorService,
 } from './';
 
-const ENTITY_STATES = [
-    ...selectorRoute,
-    ...selectorPopupRoute,
-];
+const ENTITY_STATES = [...selectorRoute, ...selectorPopupRoute];
 
-@NgModule({
-    imports: [
-        WebsiteIndexerSharedModule,
-        RouterModule.forRoot(ENTITY_STATES, {useHash: true})
-    ],
-    declarations: [
-        SelectorComponent,
-        SelectorDetailComponent,
-        SelectorDialogComponent,
-        SelectorDeleteDialogComponent,
-        SelectorPopupComponent,
-        SelectorDeletePopupComponent,
-    ],
-    entryComponents: [
-        SelectorComponent,
-        SelectorDialogComponent,
-        SelectorPopupComponent,
-        SelectorDeleteDialogComponent,
-        SelectorDeletePopupComponent,
-    ],
-    providers: [
-        SelectorService,
-        SelectorPopupService,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
+@NgModule( {
+               imports: [WebsiteIndexerSharedModule, RouterModule.forRoot( ENTITY_STATES, {useHash: true} )],
+               declarations: [SelectorComponent, SelectorDetailComponent, SelectorDialogComponent, SelectorDeleteDialogComponent, SelectorPopupComponent,
+                              SelectorDeletePopupComponent],
+               entryComponents: [SelectorComponent, SelectorDialogComponent, SelectorPopupComponent, SelectorDeleteDialogComponent, SelectorDeletePopupComponent],
+               providers: [SelectorService, SelectorPopupService],
+               schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           } )
 export class WebsiteIndexerSelectorModule {
 }

@@ -1,77 +1,47 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { JhiTrackerService } from './../shared/tracker/tracker.service';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
+import {JhiTrackerService} from './../shared/tracker/tracker.service';
 
-import { WebsiteIndexerSharedModule } from '../shared';
-/* jhipster-needle-add-admin-module-import - JHipster will add admin modules imports here */
-
+import {WebsiteIndexerSharedModule} from '../shared';
 import {
     adminState,
     AuditsComponent,
-    UserMgmtComponent,
-    UserDialogComponent,
-    UserDeleteDialogComponent,
-    UserMgmtDetailComponent,
-    UserMgmtDialogComponent,
-    UserMgmtDeleteDialogComponent,
-    LogsComponent,
-    JhiMetricsMonitoringModalComponent,
-    JhiMetricsMonitoringComponent,
-    JhiHealthModalComponent,
-    JhiHealthCheckComponent,
-    JhiConfigurationComponent,
-    JhiDocsComponent,
     AuditsService,
+    JhiConfigurationComponent,
     JhiConfigurationService,
+    JhiDocsComponent,
+    JhiHealthCheckComponent,
+    JhiHealthModalComponent,
     JhiHealthService,
+    JhiMetricsMonitoringComponent,
+    JhiMetricsMonitoringModalComponent,
     JhiMetricsService,
     JhiTrackerComponent,
+    LogsComponent,
     LogsService,
-    UserResolvePagingParams,
+    UserDeleteDialogComponent,
+    UserDialogComponent,
+    UserMgmtComponent,
+    UserMgmtDeleteDialogComponent,
+    UserMgmtDetailComponent,
+    UserMgmtDialogComponent,
+    UserModalService,
     UserResolve,
-    UserModalService
+    UserResolvePagingParams
 } from './';
 
-@NgModule({
-    imports: [
-        WebsiteIndexerSharedModule,
-        RouterModule.forRoot(adminState, { useHash: true }),
-        /* jhipster-needle-add-admin-module - JHipster will add admin modules here */
-    ],
-    declarations: [
-        AuditsComponent,
-        UserMgmtComponent,
-        UserDialogComponent,
-        UserDeleteDialogComponent,
-        UserMgmtDetailComponent,
-        UserMgmtDialogComponent,
-        UserMgmtDeleteDialogComponent,
-        LogsComponent,
-        JhiConfigurationComponent,
-        JhiHealthCheckComponent,
-        JhiHealthModalComponent,
-        JhiDocsComponent,
-        JhiTrackerComponent,
-        JhiMetricsMonitoringComponent,
-        JhiMetricsMonitoringModalComponent
-    ],
-    entryComponents: [
-        UserMgmtDialogComponent,
-        UserMgmtDeleteDialogComponent,
-        JhiHealthModalComponent,
-        JhiMetricsMonitoringModalComponent,
-    ],
-    providers: [
-        AuditsService,
-        JhiConfigurationService,
-        JhiHealthService,
-        JhiMetricsService,
-        LogsService,
-        JhiTrackerService,
-        UserResolvePagingParams,
-        UserResolve,
-        UserModalService
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
-export class WebsiteIndexerAdminModule {}
+/* jhipster-needle-add-admin-module-import - JHipster will add admin modules imports here */
+
+@NgModule( {
+               imports: [WebsiteIndexerSharedModule, RouterModule.forRoot( adminState, {useHash: true} ),
+                   /* jhipster-needle-add-admin-module - JHipster will add admin modules here */],
+               declarations: [AuditsComponent, UserMgmtComponent, UserDialogComponent, UserDeleteDialogComponent, UserMgmtDetailComponent, UserMgmtDialogComponent,
+                              UserMgmtDeleteDialogComponent, LogsComponent, JhiConfigurationComponent, JhiHealthCheckComponent, JhiHealthModalComponent, JhiDocsComponent,
+                              JhiTrackerComponent, JhiMetricsMonitoringComponent, JhiMetricsMonitoringModalComponent],
+               entryComponents: [UserMgmtDialogComponent, UserMgmtDeleteDialogComponent, JhiHealthModalComponent, JhiMetricsMonitoringModalComponent],
+               providers: [AuditsService, JhiConfigurationService, JhiHealthService, JhiMetricsService, LogsService, JhiTrackerService, UserResolvePagingParams, UserResolve,
+                           UserModalService],
+               schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           } )
+export class WebsiteIndexerAdminModule {
+}

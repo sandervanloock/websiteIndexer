@@ -1,11 +1,9 @@
 import {Injectable} from '@angular/core';
 
 @Injectable()
-export class TasksService
-{
+export class TasksService {
 
-    constructor()
-    {
+    constructor() {
     }
 
 }

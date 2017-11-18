@@ -15,36 +15,14 @@ import {
     SiteService,
 } from './';
 
-const ENTITY_STATES = [
-    ...siteRoute,
-    ...sitePopupRoute,
-];
+const ENTITY_STATES = [...siteRoute, ...sitePopupRoute];
 
-@NgModule({
-    imports: [
-        WebsiteIndexerSharedModule,
-        RouterModule.forRoot(ENTITY_STATES, {useHash: true})
-    ],
-    declarations: [
-        SiteComponent,
-        SiteDetailComponent,
-        SiteDialogComponent,
-        SiteDeleteDialogComponent,
-        SitePopupComponent,
-        SiteDeletePopupComponent,
-    ],
-    entryComponents: [
-        SiteComponent,
-        SiteDialogComponent,
-        SitePopupComponent,
-        SiteDeleteDialogComponent,
-        SiteDeletePopupComponent,
-    ],
-    providers: [
-        SiteService,
-        SitePopupService,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
+@NgModule( {
+               imports: [WebsiteIndexerSharedModule, RouterModule.forRoot( ENTITY_STATES, {useHash: true} )],
+               declarations: [SiteComponent, SiteDetailComponent, SiteDialogComponent, SiteDeleteDialogComponent, SitePopupComponent, SiteDeletePopupComponent],
+               entryComponents: [SiteComponent, SiteDialogComponent, SitePopupComponent, SiteDeleteDialogComponent, SiteDeletePopupComponent],
+               providers: [SiteService, SitePopupService],
+               schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           } )
 export class WebsiteIndexerSiteModule {
 }

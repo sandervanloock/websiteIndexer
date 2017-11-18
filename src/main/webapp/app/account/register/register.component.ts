@@ -1,13 +1,12 @@
-import { Component, OnInit, AfterViewInit, Renderer, ElementRef } from '@angular/core';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import {AfterViewInit, Component, ElementRef, OnInit, Renderer} from '@angular/core';
+import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
-import { Register } from './register.service';
-import { LoginModalService } from '../../shared';
+import {Register} from './register.service';
+import {LoginModalService} from '../../shared';
 
-@Component({
-    selector: 'jhi-register',
-    templateUrl: './register.component.html'
-})
+@Component( {
+                selector: 'jhi-register', templateUrl: './register.component.html'
+            } )
 export class RegisterComponent implements OnInit, AfterViewInit {
 
     confirmPassword: string;
@@ -19,12 +18,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     success: boolean;
     modalRef: NgbModalRef;
 
-    constructor(
-        private loginModalService: LoginModalService,
-        private registerService: Register,
-        private elementRef: ElementRef,
-        private renderer: Renderer
-    ) {
+    constructor( private loginModalService: LoginModalService, private registerService: Register, private elementRef: ElementRef, private renderer: Renderer ) {
     }
 
     ngOnInit() {
@@ -33,11 +27,11 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.renderer.invokeElementMethod(this.elementRef.nativeElement.querySelector('#login'), 'focus', []);
+        this.renderer.invokeElementMethod( this.elementRef.nativeElement.querySelector( '#login' ), 'focus', [] );
     }
 
     register() {
-        if (this.registerAccount.password !== this.confirmPassword) {
+        if ( this.registerAccount.password !== this.confirmPassword ) {
             this.doNotMatch = 'ERROR';
         } else {
             this.doNotMatch = null;
@@ -45,9 +39,9 @@ export class RegisterComponent implements OnInit, AfterViewInit {
             this.errorUserExists = null;
             this.errorEmailExists = null;
             this.registerAccount.langKey = 'en';
-            this.registerService.save(this.registerAccount).subscribe(() => {
+            this.registerService.save( this.registerAccount ).subscribe( () => {
                 this.success = true;
-            }, (response) => this.processError(response));
+            }, ( response ) => this.processError( response ) );
         }
     }
 
@@ -55,11 +49,11 @@ export class RegisterComponent implements OnInit, AfterViewInit {
         this.modalRef = this.loginModalService.open();
     }
 
-    private processError(response) {
+    private processError( response ) {
         this.success = null;
-        if (response.status === 400 && response._body === 'login already in use') {
+        if ( response.status === 400 && response._body === 'login already in use' ) {
             this.errorUserExists = 'ERROR';
-        } else if (response.status === 400 && response._body === 'email address already in use') {
+        } else if ( response.status === 400 && response._body === 'email address already in use' ) {
             this.errorEmailExists = 'ERROR';
         } else {
             this.error = 'ERROR';

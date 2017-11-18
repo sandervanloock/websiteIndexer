@@ -1,19 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
-import { ProfileService } from '../profiles/profile.service';
-import { Principal, LoginModalService, LoginService } from '../../shared';
+import {ProfileService} from '../profiles/profile.service';
+import {LoginModalService, LoginService, Principal} from '../../shared';
 
-import { VERSION, DEBUG_INFO_ENABLED } from '../../app.constants';
+import {VERSION} from '../../app.constants';
 
-@Component({
-    selector: 'jhi-navbar',
-    templateUrl: './navbar.component.html',
-    styleUrls: [
-        'navbar.css'
-    ]
-})
+@Component( {
+                selector: 'jhi-navbar', templateUrl: './navbar.component.html', styleUrls: ['navbar.css']
+            } )
 export class NavbarComponent implements OnInit {
 
     inProduction: boolean;
@@ -27,18 +23,16 @@ export class NavbarComponent implements OnInit {
         private loginService: LoginService,
         private principal: Principal,
         private loginModalService: LoginModalService,
-        private profileService: ProfileService,
-        private router: Router
-    ) {
+        private profileService: ProfileService, private router: Router ) {
         this.version = VERSION ? 'v' + VERSION : '';
         this.isNavbarCollapsed = true;
     }
 
     ngOnInit() {
-        this.profileService.getProfileInfo().subscribe((profileInfo) => {
+        this.profileService.getProfileInfo().subscribe( ( profileInfo ) => {
             this.inProduction = profileInfo.inProduction;
             this.swaggerEnabled = profileInfo.swaggerEnabled;
-        });
+        } );
     }
 
     collapseNavbar() {
@@ -56,7 +50,7 @@ export class NavbarComponent implements OnInit {
     logout() {
         this.collapseNavbar();
         this.loginService.logout();
-        this.router.navigate(['']);
+        this.router.navigate( [''] );
     }
 
     toggleNavbar() {

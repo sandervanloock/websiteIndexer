@@ -21,18 +21,20 @@
                 <th></th>
             </tr>
             </thead>
-            <tbody *ngIf ="users">
+            <tbody *ngIf="users">
             <tr *ngFor="let user of users; trackBy: trackIdentity">
                 <td><a [routerLink]="['../user-management', user.login]">{{user.id}}</a></td>
                 <td>{{user.login}}</td>
                 <td>{{user.email}}</td>
                 <td>
                     <button class="btn btn-danger btn-sm" (click)="setActive(user, true)" *ngIf="!user.activated"
-                           >Deactivated</button>
+                    >Deactivated
+                    </button>
                     <button class="btn btn-success btn-sm" (click)="setActive(user, false)" *ngIf="user.activated"
-                            [disabled]="currentAccount.login === user.login">Activated</button>
+                            [disabled]="currentAccount.login === user.login">Activated
+                    </button>
                 </td>
-                
+
                 <td>
                     <div *ngFor="let authority of user.authorities">
                         <span class="badge badge-info">{{ authority }}</span>

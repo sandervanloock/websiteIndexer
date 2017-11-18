@@ -8,18 +8,13 @@ import {WebsiteIndexerSiteModule} from './site/site.module';
 
 /* jhipster-needle-add-entity-module-import - JHipster will add entity modules imports here */
 
-@NgModule({
-    imports: [
-        WebsiteIndexerAttributeModule,
-        WebsiteIndexerDocumentModule,
-        WebsiteIndexerFeedItemModule,
-        WebsiteIndexerSelectorModule,
-        WebsiteIndexerSiteModule,
-        /* jhipster-needle-add-entity-module - JHipster will add entity modules here */
-    ],
-    declarations: [],
-    entryComponents: [],
-    providers: [],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
-export class WebsiteIndexerEntityModule {}
+@NgModule( {
+               imports: [WebsiteIndexerAttributeModule, WebsiteIndexerDocumentModule, WebsiteIndexerFeedItemModule, WebsiteIndexerSelectorModule, WebsiteIndexerSiteModule,
+                   /* jhipster-needle-add-entity-module - JHipster will add entity modules here */],
+               declarations: [],
+               entryComponents: [],
+               providers: [],
+               schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           } )
+export class WebsiteIndexerEntityModule {
+}
