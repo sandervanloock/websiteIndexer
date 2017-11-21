@@ -27,6 +27,7 @@ import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -108,6 +109,7 @@ public class CrawlerResourceIntTest
 	}
 
 	@Test
+	@Transactional
 	public void fullCrawlerTest() throws Exception {
 		//start a crawler from API
 		restCrawlerMockMvc.perform( post( "/api/crawler/" + site.getId() + "/start" ) )
