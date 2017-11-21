@@ -1,5 +1,6 @@
 package be.sandervl.config;
 
+import be.sandervl.repository.SiteRepository;
 import be.sandervl.security.AuthoritiesConstants;
 import io.github.jhipster.config.JHipsterProperties;
 import org.slf4j.Logger;
@@ -27,65 +28,85 @@ import java.util.Optional;
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebsocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
+public class WebsocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer
+{
+	public static final String IP_ADDRESS = "IP_ADDRESS";
+	private final Logger log = LoggerFactory.getLogger( WebsocketConfiguration.class );
+	private final SiteRepository siteRepository;
+	private final JHipsterProperties jHipsterProperties;
 
-    private final Logger log = LoggerFactory.getLogger(WebsocketConfiguration.class);
+	public WebsocketConfiguration( SiteRepository siteRepository,
+	                               JHipsterProperties jHipsterProperties ) {
+		this.siteRepository = siteRepository;
+		this.jHipsterProperties = jHipsterProperties;
+	}
 
-    public static final String IP_ADDRESS = "IP_ADDRESS";
+	@Override
+	public void configureMessageBroker( MessageBrokerRegistry config ) {
+		config.enableSimpleBroker( "/topic" );
+	}
 
-    private final JHipsterProperties jHipsterProperties;
+	@Override
+	public void registerStompEndpoints( StompEndpointRegistry registry ) {
+		String[] allowedOrigins = Optional.ofNullable( jHipsterProperties.getCors().getAllowedOrigins() ).map(
+				origins -> origins.toArray( new String[0] ) ).orElse( new String[0] );
+		registry.addEndpoint( "/websocket/tracker" )
+		        .setHandshakeHandler( defaultHandshakeHandler() )
+		        .setAllowedOrigins( allowedOrigins )
+		        .withSockJS()
+		        .setInterceptors( httpSessionHandshakeInterceptor() );
 
-    public WebsocketConfiguration(JHipsterProperties jHipsterProperties) {
-        this.jHipsterProperties = jHipsterProperties;
-    }
+		siteRepository.findAll().forEach( site -> {
+			registry.addEndpoint( "/websocket/crawlstat/" + site.getId() )
+			        .setHandshakeHandler( defaultHandshakeHandler() )
+			        .setAllowedOrigins( allowedOrigins )
+			        .withSockJS()
+			        .setInterceptors( httpSessionHandshakeInterceptor() );
+		} );
+	}
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-    }
+	@Bean
+	public HandshakeInterceptor httpSessionHandshakeInterceptor() {
+		return new HandshakeInterceptor()
+		{
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        String[] allowedOrigins = Optional.ofNullable(jHipsterProperties.getCors().getAllowedOrigins()).map(origins -> origins.toArray(new String[0])).orElse(new String[0]);
-        registry.addEndpoint("/websocket/tracker")
-            .setHandshakeHandler(defaultHandshakeHandler())
-            .setAllowedOrigins(allowedOrigins)
-            .withSockJS()
-            .setInterceptors(httpSessionHandshakeInterceptor());
-    }
+			@Override
+			public boolean beforeHandshake( ServerHttpRequest request,
+			                                ServerHttpResponse response,
+			                                WebSocketHandler wsHandler,
+			                                Map<String, Object> attributes ) throws Exception {
+				if ( request instanceof ServletServerHttpRequest ) {
+					ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+					attributes.put( IP_ADDRESS, servletRequest.getRemoteAddress() );
+				}
+				return true;
+			}
 
-    @Bean
-    public HandshakeInterceptor httpSessionHandshakeInterceptor() {
-        return new HandshakeInterceptor() {
+			@Override
+			public void afterHandshake( ServerHttpRequest request,
+			                            ServerHttpResponse response,
+			                            WebSocketHandler wsHandler,
+			                            Exception exception ) {
 
-            @Override
-            public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-                if (request instanceof ServletServerHttpRequest) {
-                    ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-                    attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
-                }
-                return true;
-            }
+			}
+		};
+	}
 
-            @Override
-            public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-
-            }
-        };
-    }
-
-    private DefaultHandshakeHandler defaultHandshakeHandler() {
-        return new DefaultHandshakeHandler() {
-            @Override
-            protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-                Principal principal = request.getPrincipal();
-                if (principal == null) {
-                    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
-                    principal = new AnonymousAuthenticationToken("WebsocketConfiguration", "anonymous", authorities);
-                }
-                return principal;
-            }
-        };
-    }
+	private DefaultHandshakeHandler defaultHandshakeHandler() {
+		return new DefaultHandshakeHandler()
+		{
+			@Override
+			protected Principal determineUser( ServerHttpRequest request,
+			                                   WebSocketHandler wsHandler,
+			                                   Map<String, Object> attributes ) {
+				Principal principal = request.getPrincipal();
+				if ( principal == null ) {
+					Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+					authorities.add( new SimpleGrantedAuthority( AuthoritiesConstants.ANONYMOUS ) );
+					principal = new AnonymousAuthenticationToken( "WebsocketConfiguration", "anonymous", authorities );
+				}
+				return principal;
+			}
+		};
+	}
 }

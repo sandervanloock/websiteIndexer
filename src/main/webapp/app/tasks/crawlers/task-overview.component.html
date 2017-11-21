@@ -1,0 +1,57 @@
+<div>
+    <h2>
+        <span>Running tasks</span>
+    </h2>
+    <div class="row">
+    </div>
+    <div>
+        <div class="alert alert-secondary" role="alert">
+            Available resources: {{cores}}
+        </div>
+    </div>
+    <h3>
+        <span>Crawlers</span>
+        <button class="btn btn-primary float-right create-crawl"
+                [routerLink]="['/tasks/crawlers/new']">
+            <span class="fa fa-plus"></span>
+            <span>
+                Start new crawl
+                </span>
+        </button>
+    </h3>
+    <div class="row"></div>
+    <br/>
+    <div class="table-responsive" *ngIf="crawlers">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th><span>Status</span> </span></th>
+                <th><span>Started On</span> </span></th>
+                <th><span>Site name</span> </span></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let crawler of crawlStats ;trackBy: trackId">
+                <td>{{crawler.status}}</td>
+                <td>{{crawler.startedOn | date:'medium'}}</td>
+                <td>
+                    <div *ngIf="crawler.site">
+                        <a [routerLink]="['../site', crawler.site?.id ]">{{crawler.site?.name}}</a>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <div class="btn-group flex-btn-group-container">
+                        <button type="submit"
+                                [routerLink]="['../crawler', crawler.id ]"
+                                class="btn btn-info btn-sm">
+                            <span class="fa fa-eye"></span>
+                            <span class="hidden-md-down">View</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

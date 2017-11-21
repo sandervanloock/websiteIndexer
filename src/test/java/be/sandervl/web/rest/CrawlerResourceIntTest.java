@@ -91,7 +91,7 @@ public class CrawlerResourceIntTest
 		MockitoAnnotations.initMocks( this );
 		Selector selector = SelectorResourceIntTest.createEntity( em );
 		site = selector.getSite();
-		CrawlerResource selectorResource = new CrawlerResource( crawlerService, crawlStatService, siteRepository );
+		CrawlerResource selectorResource = new CrawlerResource( crawlerService, siteRepository );
 		this.restCrawlerMockMvc = MockMvcBuilders.standaloneSetup( selectorResource )
 		                                         .setCustomArgumentResolvers( pageableArgumentResolver )
 		                                         .setControllerAdvice( exceptionTranslator )

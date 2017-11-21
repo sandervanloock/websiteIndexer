@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +48,11 @@ public class CrawlerServiceImpl implements CrawlerService
 	public CrawlerServiceImpl( CrawlerProperties crawlerProperties, ApplicationContext context ) {
 		this.crawlerProperties = crawlerProperties;
 		this.context = context;
+	}
+
+	@Override
+	public Collection<CrawlStats> getAllCrawlStats() {
+		return statsMap.values();
 	}
 
 	@Override

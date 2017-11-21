@@ -3,7 +3,6 @@ package be.sandervl.web.rest;
 import be.sandervl.domain.Site;
 import be.sandervl.repository.SiteRepository;
 import be.sandervl.service.crawler.CrawlerService;
-import be.sandervl.web.websocket.CrawlStatsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,13 +21,11 @@ public class CrawlerResourceTest
 	@Mock
 	private CrawlerService crawlerService;
 	@Mock
-	private CrawlStatsService crawlStatsService;
-	@Mock
 	private SiteRepository siteRepository;
 
 	@Before
 	public void setUp() throws Exception {
-		resource = new CrawlerResource( crawlerService, crawlStatsService, siteRepository );
+		resource = new CrawlerResource( crawlerService, siteRepository );
 	}
 
 	@Test

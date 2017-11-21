@@ -5,15 +5,17 @@ import be.sandervl.repository.SiteRepository;
 import be.sandervl.service.crawler.CrawlServiceException;
 import be.sandervl.service.crawler.CrawlStats;
 import be.sandervl.service.crawler.CrawlerService;
-import be.sandervl.web.websocket.CrawlStatsService;
+import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -24,17 +26,27 @@ import java.util.Optional;
 @RequestMapping("/api/crawler")
 public class CrawlerResource
 {
-	private static Logger LOG = LoggerFactory.getLogger( CrawlerResource.class );
+	private static Logger log = LoggerFactory.getLogger( CrawlerResource.class );
 
 	private final CrawlerService crawlerService;
-	private final CrawlStatsService crawlStatsService;
 	private final SiteRepository siteRepository;
 
-	public CrawlerResource( CrawlerService crawlerService,
-	                        CrawlStatsService crawlStatsService, SiteRepository siteRepository ) {
+	public CrawlerResource( CrawlerService crawlerService, SiteRepository siteRepository ) {
 		this.crawlerService = crawlerService;
-		this.crawlStatsService = crawlStatsService;
 		this.siteRepository = siteRepository;
+	}
+
+	/**
+	 * GET  /crawler : get all the crawler stats
+	 *
+	 * @return the ResponseEntity with status 200 (OK) and the list of crawler stats in body
+	 */
+	@GetMapping
+	@Timed
+	public ResponseEntity<Collection<CrawlStats>> getAllAttributes() {
+		log.debug( "REST request to get all CrawlerStats" );
+		Collection<CrawlStats> page = crawlerService.getAllCrawlStats();
+		return new ResponseEntity<>( page, new LinkedMultiValueMap<>(), HttpStatus.OK );
 	}
 
 	@GetMapping(value = "/{id:\\d+}/stats")
@@ -49,7 +61,7 @@ public class CrawlerResource
 	public void stopCrawler( @PathVariable(name = "id") Long id ) {
 		Site site = siteRepository.findOne( id );
 
-		LOG.debug( "Stopping crawl for site {}", site );
+		log.debug( "Stopping crawl for site {}", site );
 		crawlerService.stopCrawler( site );
 	}
 
@@ -61,12 +73,12 @@ public class CrawlerResource
 		}
 		Site site = siteRepository.findOne( id );
 
-		LOG.debug( "Resuming crawl for site {}", site );
+		log.debug( "Resuming crawl for site {}", site );
 		try {
 			crawlerService.resumeCrawler( site );
 		}
 		catch ( CrawlServiceException e ) {
-			LOG.error( "Exception occurred while resuming crawl for site {}", site, e );
+			log.error( "Exception occurred while resuming crawl for site {}", site, e );
 		}
 		return "redirect:/api/crawler/" + site.getId() + "/stats";
 	}
@@ -78,21 +90,18 @@ public class CrawlerResource
 		}
 		Site site = siteRepository.findOne( id );
 
-		LOG.debug( "Starting crawl for site {}", site );
+		log.debug( "Starting crawl for site {}", site );
 		try {
 			crawlerService.startCrawler( site );
 		}
 		catch ( CrawlServiceException e ) {
-			LOG.error( "Exception occurred while starting new crawl for site {}", site, e );
+			log.error( "Exception occurred while starting new crawl for site {}", site, e );
 		}
 		return "redirect:/api/crawler/" + site.getId() + "/stats";
 	}
 
 	private boolean validSiteId( @PathVariable(name = "id") Long id ) {
-		if ( id == null ) {
-			return true;
-		}
-		return false;
+		return id == null;
 	}
 
 }

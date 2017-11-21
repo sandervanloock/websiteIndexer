@@ -3,6 +3,7 @@ package be.sandervl.service.crawler;
 import be.sandervl.domain.Site;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -29,6 +30,8 @@ public interface CrawlerService
 	default CrawlController resumeCrawler( Site site ) throws CrawlServiceException {
 		return resumeCrawler( site, true );
 	}
+
+	Collection<CrawlStats> getAllCrawlStats();
 
 	/**
 	 * See if there is already a controller running for this site.
