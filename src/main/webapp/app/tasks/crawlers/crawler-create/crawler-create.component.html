@@ -1,0 +1,19 @@
+<form name="editForm" role="form" novalidate #crawlForm="ngForm" (ngSubmit)="save()">
+    <div class="form-group">
+        <label for="field_site">Site</label>
+        <select class="form-control" id="field_site" name="site" [(ngModel)]="crawl.site" required>
+            <option [ngValue]="crawl.site?.id === optionSite.id ? crawl.site : optionSite"
+                    *ngFor="let optionSite of sites">
+                {{optionSite.name}}
+            </option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="seed">Seed</label>
+        <input type="url" class="form-control" id="seed" placeholder="Seed">
+        <small id="seedHelpBlock" class="form-text text-muted">
+            Choose a seed where the crawl will start
+        </small>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

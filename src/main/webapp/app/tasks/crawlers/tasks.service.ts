@@ -19,8 +19,14 @@ export class TasksService {
     }
 
     startCrawl( site: Site ): Observable<CrawlStats> {
-        return this.http.post( `${this.resourceUrl}/${site.id}/start`, {} ).map( ( res: Response ) => {
+        const copy: Site = this.convert( site );
+        return this.http.post( `${this.resourceUrl}/${site.id}/start`, copy ).map( ( res: Response ) => {
             return res.json();
         } );
+    }
+
+    private convert( site: Site ): Site {
+        const copy: Site = Object.assign( {}, site );
+        return copy;
     }
 }

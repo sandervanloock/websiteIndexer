@@ -1,12 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Site} from '../../entities/site/site.model';
 import {TasksService} from './tasks.service';
 import {CrawlStats} from './crawl-stats.model';
-
-class Crawler {
-    constructor( public id?: number, public status?: string, public startedOn?: Date, public site?: Site ) {
-    }
-}
 
 @Component( {
                 selector: 'jhi-task-overview', templateUrl: './task-overview.component.html', styles: []
