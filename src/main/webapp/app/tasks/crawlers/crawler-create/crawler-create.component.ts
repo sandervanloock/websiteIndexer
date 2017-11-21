@@ -38,9 +38,9 @@ export class CrawlerCreateComponent implements OnInit {
     }
 
     private onSaveSuccess( result: CrawlStats ) {
-        //this.eventManager.broadcast( {name: 'attributeListModification', content: 'OK'} );
+        // this.eventManager.broadcast( {name: 'attributeListModification', content: 'OK'} );
         this.isSaving = false;
-        //this.activeModal.dismiss( result );
+        // this.activeModal.dismiss( result );
     }
 
     private onSaveError( error ) {
