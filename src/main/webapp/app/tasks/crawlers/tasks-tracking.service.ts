@@ -40,7 +40,7 @@ export class TasksTrackingService {
             this.connectedPromise( 'success' );
             this.connectedPromise = null;
             // subscribe here
-            this.stompClient.subscribe( '/topic/crawlstat', message => console.log( message ) );
+            this.stompClient.subscribe( '/topic/crawlstat', ( message ) => console.log( message ) );
         } );
     }
 

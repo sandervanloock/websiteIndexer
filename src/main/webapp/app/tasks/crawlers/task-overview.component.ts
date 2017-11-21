@@ -13,8 +13,8 @@ class Crawler {
             } )
 export class TaskOverviewComponent implements OnInit {
 
-    private cores: number;
-    private crawlStats: CrawlStats[];
+    cores: number;
+    crawlStats: CrawlStats[];
 
     constructor( private taskService: TasksService ) {
     }
